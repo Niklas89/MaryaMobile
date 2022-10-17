@@ -1,9 +1,12 @@
+
 import React, {useContext, useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { IUser } from "../interfaces/IUser";
 import { AxiosFunction } from "../api/AxiosFunction";
 import { AxiosError, AxiosResponse } from "axios";
 import useAuth from "../hooks/useAuth";
+import BackgroundImg from "../components/BackgroundImg";
+import colors from "../config/colors";
 import {
   Button,
   Text,
@@ -46,6 +49,7 @@ const LoginScreen = () => {
     return (
         <View style={styles.container}>
           <View style={styles.wrapper}>
+          <Text style={styles.text}>Adresse mail</Text>
             <TextInput
               style={styles.input}
               value={email}
@@ -53,6 +57,7 @@ const LoginScreen = () => {
           onChangeText={text => setEmail(text)}
             />
     
+            <Text style={styles.text}>Mot de passe</Text>
             <TextInput
               style={styles.input}
               value={password}
@@ -60,41 +65,53 @@ const LoginScreen = () => {
           onChangeText={text => setPassword(text)}
               secureTextEntry
             />
-    
+          
+          </View>
+            <View style={styles.button}>
             <Button
-              title="Login"
+              title="Se connecter"
+              color={colors.primary}
               onPress={() => {
                 login(email, password);
               }}
             />
+             </View>
     
             <View style={{flexDirection: 'row', marginTop: 20}}>
-              <Text>Don't have an account!? </Text>
+              <Text>Inscription </Text>
             </View>
-          </View>
-        </View>
-    );
+         
+      </View>
+    </>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    wrapper: {
-      width: '80%',
-    },
-    input: {
-      marginBottom: 12,
-      borderWidth: 1,
-      borderColor: '#bbb',
-      borderRadius: 5,
-      paddingHorizontal: 14,
-    },
-    link: {
-      color: 'blue',
-    },
-  });
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  wrapper: {
+    width: "80%",
+  },
+  text: {
+    color: colors.text,
+  },
+  input: {
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#bbb",
+    borderRadius: 5,
+    paddingHorizontal: 14,
+    paddingVertical: 4
+  },
+  button: {
+    position: "absolute",
+    bottom: 0,
+    height: 60,
+    alignItems: "center",
+  },
+});
 
 export default LoginScreen;

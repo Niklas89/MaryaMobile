@@ -1,12 +1,12 @@
-
 export default {
-    primary: "#fc5c65",
-    secondary: "#4ecdc4",
+    text: "#023535",
+    primary: "#008F8C",
+    secondary: "#0FC2C0",
+    tertiary: "#015958",
+    quaternary: "#9FC131",
+    quinary: "#4477C2",
     black: "#000",
     white: "#fff",
-    medium: "#6e6969",
-    light: "#f8f4f4",
-    dark: "#0c0c0c",
-    danger: "#ff5252"
+    error: "#DBF227"
   };
   
