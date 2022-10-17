@@ -1,27 +1,32 @@
-import React, { useContext, useState } from "react";
-import { StatusBar } from "expo-status-bar";
-import { Button, Text, TextInput, View, StyleSheet } from "react-native";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import React from "react";
 import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
   return (
     <>
       <BackgroundImg />
       <View style={styles.container}>
         <View style={styles.wrapper}>
+          <Text style={styles.text}>Prénom</Text>
+          <TextInput style={styles.input} placeholder="Mickaël" />
+          <Text style={styles.text}>Nom</Text>
+          <TextInput style={styles.input} placeholder="Noel" />
           <Text style={styles.text}>Adresse mail</Text>
-          <TextInput style={styles.input} placeholder="exemple@gmail.com" />
+          <TextInput style={styles.input} placeholder="mickael.noel@exemple.com" />
           <Text style={styles.text}>Mot de passe</Text>
           <TextInput style={styles.input} secureTextEntry />
         </View>
         <View style={styles.button}>
-          <Button title="Se connecter" color={colors.primary} />
+          <Button title="S'inscrire" color={colors.primary} />
         </View>
       </View>
     </>
   );
 };
+
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -41,7 +46,7 @@ const styles = StyleSheet.create({
     borderColor: "#bbb",
     borderRadius: 5,
     paddingHorizontal: 14,
-    paddingVertical: 4
+    paddingVertical: 4,
   },
   button: {
     position: "absolute",
@@ -50,5 +55,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
-export default LoginScreen;
