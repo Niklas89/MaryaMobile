@@ -28,7 +28,7 @@ export type AuthContextType = {
         id?: number
         email?: string
         role?: number
-        accessToken?: string
+        accessToken?: string    
     };
     persist?: boolean | undefined;
     setAuth?: (auth: AuthData) => void;
