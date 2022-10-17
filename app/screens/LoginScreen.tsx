@@ -1,23 +1,86 @@
-import React, { useContext, useState } from "react";
-import { StatusBar } from "expo-status-bar";
-import { Button, Text, TextInput, View, StyleSheet } from "react-native";
+
+import React, {useContext, useState} from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { IUser } from "../interfaces/IUser";
+import { AxiosFunction } from "../api/AxiosFunction";
+import { AxiosError, AxiosResponse } from "axios";
+import useAuth from "../hooks/useAuth";
 import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
+import {
+  Button,
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+} from 'react-native';
+
+/*
+const initialValues = {
+    email: "",
+    password: "",
+}; */
+
+const LOGIN_URL = "auth/login";
 
 const LoginScreen = () => {
-  return (
-    <>
-      <BackgroundImg />
-      <View style={styles.container}>
-        <View style={styles.wrapper}>
+    //const [userInfo, setUserInfos] = useState<IUser>(initialValues);
+    // const { setAuth, persist, setPersist } = useAuth();
+    const { setAuth } = useAuth();
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
+    const { postQuery } = AxiosFunction();
+
+    const login = (email: string | undefined, password: string | undefined) => {
+        const postData = { email, password};
+        console.log(postData);
+        postQuery(LOGIN_URL, postData).then((response: AxiosResponse) => {
+            const accessToken = response.data.accessToken;
+            const role = response.data.idRole;
+            console.log(response.data);
+            //setUserInfos(response.data);
+            setAuth?.({ role, accessToken });
+        }).catch((error: AxiosError) => {
+            console.log(error);
+        })
+    };
+
+    return (
+        <View style={styles.container}>
+          <View style={styles.wrapper}>
           <Text style={styles.text}>Adresse mail</Text>
-          <TextInput style={styles.input} placeholder="exemple@gmail.com" />
-          <Text style={styles.text}>Mot de passe</Text>
-          <TextInput style={styles.input} secureTextEntry />
-        </View>
-        <View style={styles.button}>
-          <Button title="Se connecter" color={colors.primary} />
-        </View>
+            <TextInput
+              style={styles.input}
+              value={email}
+          placeholder="Enter email"
+          onChangeText={text => setEmail(text)}
+            />
+    
+            <Text style={styles.text}>Mot de passe</Text>
+            <TextInput
+              style={styles.input}
+              value={password}
+          placeholder="Enter password"
+          onChangeText={text => setPassword(text)}
+              secureTextEntry
+            />
+          
+          </View>
+            <View style={styles.button}>
+            <Button
+              title="Se connecter"
+              color={colors.primary}
+              onPress={() => {
+                login(email, password);
+              }}
+            />
+             </View>
+    
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+              <Text>Inscription </Text>
+            </View>
+         
       </View>
     </>
   );
