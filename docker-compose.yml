@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  # Serveur node.js lts
+  reactjs:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: mobile_react
+    ports:
+      - "19000:19000"
+      - "19001:19001"
