@@ -7,16 +7,24 @@ import useAuth from "../hooks/useAuth";
 import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
 import { Button, Text, TextInput, View, StyleSheet } from "react-native";
+import { RouteParams } from "../navigation/RootNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/core";
 
-/*
-const initialValues = {
-    email: "",
-    password: "",
-}; */
+type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
+  RouteParams,
+  T
+>;
+
+type ScreenRouteProp<T extends keyof RouteParams> = RouteProp<RouteParams, T>;
+type Props<T extends keyof RouteParams> = {
+  route: ScreenRouteProp<T>;
+  navigation: ScreenNavigationProp<T>;
+};
 
 const LOGIN_URL = "auth/login";
 
-const LoginScreen = () => {
+const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
   //const [userInfo, setUserInfos] = useState<IUser>(initialValues);
   // const { setAuth, persist, setPersist } = useAuth();
   const { setAuth } = useAuth();
@@ -35,6 +43,7 @@ const LoginScreen = () => {
         console.log(response.data);
         //setUserInfos(response.data);
         setAuth?.({ role, accessToken });
+        navigation.navigate("Booking");
       })
       .catch((error: AxiosError) => {
         console.log(error);

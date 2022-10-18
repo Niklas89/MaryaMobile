@@ -16,22 +16,22 @@ type Props<T extends keyof RouteParams> = {
   navigation: ScreenNavigationProp<T>;
 };
 
-const BookingScreen: React.FC<Props<"Booking">> = ({ navigation }) => {
+const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
   const { auth, setAuth } = useAuth();
   return (
     <View>
       <Text>
-        BookingScreen {auth?.role} {auth?.accessToken}
+        ProfileScreen {auth?.role} {auth?.accessToken}
       </Text>
       <Button
-        title="Profile"
-        onPress={() => navigation.navigate("Profile")}
+        title="Register"
+        onPress={() => navigation.navigate("Register")}
         color="blue"
       />
     </View>
   );
 };
 
-export default BookingScreen;
+export default ProfileScreen;
 
 const styles = StyleSheet.create({});
