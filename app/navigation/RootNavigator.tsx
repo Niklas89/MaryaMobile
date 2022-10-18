@@ -4,12 +4,14 @@ import BookingScreen from "../screens/BookingScreen";
 import HomeScreen from "../screens/HomeScreen";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 export type RouteParams = {
-    Login: undefined;
-    Register: undefined;
-    Home: undefined;
-    Booking: undefined;
+  Login: undefined;
+  Register: undefined;
+  Home: undefined;
+  Booking: undefined;
+  Profile: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteParams>();
@@ -41,6 +43,19 @@ export const RootNavigator = () => {
                             <Button
                                 onPress={() => alert('This is a button!')}
                                 title="login"
+                                color="#fff"
+                            />
+                        ),
+                    }}
+                />
+                <Stack.Screen
+                    name="Profile"
+                    component={ProfileScreen}
+                    options={{
+                        headerRight: () => (
+                            <Button
+                                onPress={() => alert('This is a button!')}
+                                title="profile"
                                 color="#fff"
                             />
                         ),
