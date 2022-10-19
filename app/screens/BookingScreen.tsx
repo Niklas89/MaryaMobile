@@ -5,29 +5,14 @@ import { RouteParams } from "../navigation/RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/core";
 
-type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
-  RouteParams,
-  T
->;
 
-type ScreenRouteProp<T extends keyof RouteParams> = RouteProp<RouteParams, T>;
-type Props<T extends keyof RouteParams> = {
-  route: ScreenRouteProp<T>;
-  navigation: ScreenNavigationProp<T>;
-};
-
-const BookingScreen: React.FC<Props<"Booking">> = ({ navigation }) => {
+const BookingScreen = () => {
   const { auth, setAuth } = useAuth();
   return (
     <View>
       <Text>
         BookingScreen {auth?.role} {auth?.accessToken}
       </Text>
-      <Button
-        title="Profile"
-        onPress={() => navigation.navigate("Profile")}
-        color="blue"
-      />
     </View>
   );
 };
