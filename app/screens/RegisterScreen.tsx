@@ -1,5 +1,5 @@
-import { StyleSheet, View } from "react-native";
-import React from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
 import { AxiosFunction } from "../api/AxiosFunction";
@@ -12,10 +12,15 @@ import { AxiosError, AxiosResponse } from "axios";
 import { RouteParams } from "../navigation/RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
 import SelectGroup from "../components/Form/SelectGroup";
 
 const REGISTER_URL = "auth/partner/register";
+const GETCATEGORY_URL = "service/category";
+
+interface IData {
+  id: number;
+  name: string;
+}
 
 type FormValues = {
   firstName: string;
@@ -26,6 +31,7 @@ type FormValues = {
   address: string;
   postalCode: string;
   city: string;
+  idCategory: string;
 };
 type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
@@ -48,8 +54,22 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
     address: "",
     postalCode: "",
     city: "",
+    idCategory: "",
   };
-  const { postQuery } = AxiosFunction();
+
+  const [services, setServices] = useState<Array<IData>>();
+
+  const { postQuery, getQuery } = AxiosFunction();
+
+  useEffect(() => {
+    getQuery(GETCATEGORY_URL)
+      .then((response: AxiosResponse) => {
+        setServices(response.data);
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }, []);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -75,10 +95,10 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
       "Merci de remplir le champ code ci-dessus."
     ),
     city: Yup.string().required("Merci de remplir le champ ci-dessus."),
+    idCategory: Yup.string().required("Merci de remplir le champ ci-dessus."),
   });
 
   const register = (data: FormValues) => {
-    const idCategory = 1;
     const {
       firstName,
       lastName,
@@ -89,6 +109,9 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
       postalCode,
       phone,
     } = data;
+
+    let idCategory = parseInt(data.idCategory);
+
     const postData = {
       firstName,
       lastName,
@@ -103,7 +126,7 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
     postQuery(REGISTER_URL, postData)
       .then((response: AxiosResponse) => {
         clearErrors();
-        navigation.navigate("Booking");
+        //navigation.navigate("Register");
       })
       .catch((error: AxiosError) => {
         console.log(error);
@@ -122,165 +145,162 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
   return (
     <>
       <View style={styles.container}>
-        <BackgroundImg />
         <View style={styles.form}>
-          <Controller
-            control={control}
-            name="firstName"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputGroup
-                label="Prénom"
-                value={value}
-                placeholder="Mickael"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                errorDetails={error?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="lastName"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputGroup
-                label="Nom"
-                value={value}
-                placeholder="Noël"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                errorDetails={error?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="email"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputGroup
-                label="Adresse mail"
-                value={value}
-                placeholder="mickael.noel@marya.fr"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                errorDetails={error?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="password"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputGroup
-                label="Mot de passe"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                password
-                error={!!error}
-                errorDetails={error?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="address"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputGroup
-                label="Adresse"
-                value={value}
-                placeholder="143 Rue Yves le Coz"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                errorDetails={error?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="city"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputGroup
-                label="Ville"
-                value={value}
-                placeholder="Versailles"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                errorDetails={error?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="postalCode"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputGroup
-                label="Code postal"
-                value={value}
-                placeholder="78000"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                errorDetails={error?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="phone"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputGroup
-                label="Numéro de téléphone"
-                value={value}
-                placeholder="0601020304"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                errorDetails={error?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="phone"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <SelectGroup label="Catégorie" value={value} onValueChange={onChange}/>
-            )}
-          />
-        </View>
-        <View style={styles.button}>
-          <Button title="S'inscrire" onPress={handleSubmit(register)} />
+          <ScrollView>
+            <Controller
+              control={control}
+              name="firstName"
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  placeholder="Prénom"
+                  onChangeText={onChange}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="lastName"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  placeholder="Nom"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="email"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  placeholder="Adresse mail"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  placeholder="Mot de passe"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  password
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="address"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  placeholder="Adresse"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="city"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  placeholder="Ville"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="postalCode"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  placeholder="Code postal"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="phone"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  placeholder="Numéro de téléphone"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="idCategory"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <SelectGroup
+                  value={value}
+                  data={services}
+                  onValueChange={onChange}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Button title="S'inscrire" onPress={handleSubmit(register)} />
+          </ScrollView>
         </View>
       </View>
     </>
@@ -294,9 +314,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: colors.white,
   },
   form: {
-    width: "100%",
+    width: "80%",
   },
   text: {
     color: colors.text,
