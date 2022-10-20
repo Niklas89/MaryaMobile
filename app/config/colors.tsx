@@ -7,6 +7,8 @@ export default {
     quinary: "#4477C2",
     black: "#000",
     white: "#fff",
-    error: "#DBF227"
+    grey: "#C5C5C7",
+    error: "#DBF227",
+    red: "#8F1107"
   };
   

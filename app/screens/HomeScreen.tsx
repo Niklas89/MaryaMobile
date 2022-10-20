@@ -1,24 +1,22 @@
-import React, { useContext } from 'react';
-import { Button, Image, StyleSheet, Text, View } from 'react-native';
-import { RouteParams } from '../navigation/RootNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/core';
-import BackgroundImg from '../components/BackgroundImg';
+import React, { useContext } from "react";
+import { Button, Image, StyleSheet, Text, View } from "react-native";
+import { RouteParams } from "../navigation/RootNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/core";
+import BackgroundImg from "../components/BackgroundImg";
 
-type ScreenNavigationProp<
-  T extends keyof RouteParams> = StackNavigationProp<RouteParams, T>;
-
-type ScreenRouteProp<T extends keyof RouteParams> = RouteProp<
+type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
   T
 >;
+
+type ScreenRouteProp<T extends keyof RouteParams> = RouteProp<RouteParams, T>;
 type Props<T extends keyof RouteParams> = {
   route: ScreenRouteProp<T>;
   navigation: ScreenNavigationProp<T>;
 };
 
-const HomeScreen: React.FC<Props<'Home'>> = ({ navigation }) => {
-
+const HomeScreen: React.FC<Props<"Home">> = ({ navigation }) => {
   return (
     <>
       <BackgroundImg />
@@ -33,15 +31,16 @@ const HomeScreen: React.FC<Props<'Home'>> = ({ navigation }) => {
           <View style={styles.button}>
             <Button
               title="Connexion"
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate("Login")}
               color="#008F8C"
             />
           </View>
           <View style={styles.button}>
             <Button
               title="Inscription"
-              onPress={() => navigation.navigate('Register')}
-              color="#0FC2C0" />
+              onPress={() => navigation.navigate("Register")}
+              color="#0FC2C0"
+            />
           </View>
         </View>
       </View>
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
   containerLogo: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 150
+    marginTop: 150,
   },
   logo: {
     position: "relative",
@@ -69,9 +68,8 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   button: {
-    padding: 10
+    padding: 10,
   },
-
 });
 
 export default HomeScreen;
