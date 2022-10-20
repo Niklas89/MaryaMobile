@@ -43,6 +43,7 @@ const SelectGroup = ({
           data.map((service) => {
             return (
               <Picker.Item
+                key={service.id}
                 label={service.name}
                 style={styles.item}
                 value={service.id}
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     borderColor: colors.red,
   },
   select: {
-    marginBottom: 20
+    marginBottom: 20,
   },
   errorText: {
     color: colors.red,
