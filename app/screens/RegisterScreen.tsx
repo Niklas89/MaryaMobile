@@ -1,76 +1,286 @@
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import React, { useRef } from "react";
+import { StyleSheet, View } from "react-native";
+import React from "react";
 import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
 import { AxiosFunction } from "../api/AxiosFunction";
 import * as Yup from "yup";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import InputGroup from "../components/Form/InputGroup";
+import Button from "../components/Form/Button";
+import { AxiosError, AxiosResponse } from "axios";
+import { RouteParams } from "../navigation/RootNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
+import SelectGroup from "../components/Form/SelectGroup";
 
 const REGISTER_URL = "auth/partner/register";
 
-const RegisterScreen = () => {
+type FormValues = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phone: string;
+  address: string;
+  postalCode: string;
+  city: string;
+};
+type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
+  RouteParams,
+  T
+>;
+
+type ScreenRouteProp<T extends keyof RouteParams> = RouteProp<RouteParams, T>;
+type Props<T extends keyof RouteParams> = {
+  route: ScreenRouteProp<T>;
+  navigation: ScreenNavigationProp<T>;
+};
+
+const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
+  const values = {
+    lastName: "",
+    firstName: "",
+    email: "",
+    password: "",
+    phone: "",
+    address: "",
+    postalCode: "",
+    city: "",
+  };
   const { postQuery } = AxiosFunction();
 
-  const validationShema = Yup.object().shape({
-    email: Yup.string().email("Votre e-mail n\'est pas valide").required("Merci de remplir le champ e-mail"),
-    lastName: Yup.string().matches(/^[A-Za-z ]+$/, "Le nom doit contenir que des lettres.").required("Merci de remplir le champ nom"),
-    firstName: Yup.string().matches(/^[A-Za-z ]+$/, "Le prenom doit contenir que des lettres.").required("Merci de remplir le champ prenom"),
-    password: Yup.string().min(6, "Mot de passe trop court").max(50, "Mot de passe trop long").matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*#?&\/]{6,50}$/, "Le mot de passe doit contenir une majuscule, une minuscule, et un nombre.").required("Merci de remplir le champ mot de passe"),
-    phone: Yup.string().required("Merci de remplir le champ numéro de téléphone."),
-    address: Yup.string().required("Merci de remplire le champ adresse"),
-    postalCode: Yup.number().required("Merci de remplire le champ code postal"),
-    city: Yup.string().required("Merci de remplire le champ ville"),
-});
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email("Votre e-mail n'est pas valide.")
+      .required("Merci de remplir le champ ci-dessus."),
+    lastName: Yup.string()
+      .matches(/^[A-Za-z ]+$/, "Le nom doit contenir que des lettres.")
+      .required("Merci de remplir le champ ci-dessus."),
+    firstName: Yup.string()
+      .matches(/^[A-Za-z ]+$/, "Le prenom doit contenir que des lettres.")
+      .required("Merci de remplir le champ ci-dessus."),
+    password: Yup.string()
+      .min(6, "Mot de passe trop court")
+      .max(50, "Mot de passe trop long")
+      .matches(
+        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*#?&\/]{6,50}$/,
+        "Le mot de passe doit contenir une majuscule, une minuscule, et un nombre."
+      )
+      .required("Merci de remplir le champ ci-dessus."),
+    phone: Yup.string().required("Merci de remplir le champ ci-dessus."),
+    address: Yup.string().required("Merci de remplir le champ ci-dessus."),
+    postalCode: Yup.number().required(
+      "Merci de remplir le champ code ci-dessus."
+    ),
+    city: Yup.string().required("Merci de remplir le champ ci-dessus."),
+  });
 
-  const register = () => {};
+  const register = (data: FormValues) => {
+    const idCategory = 1;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      address,
+      city,
+      postalCode,
+      phone,
+    } = data;
+    const postData = {
+      firstName,
+      lastName,
+      email,
+      password,
+      address,
+      city,
+      postalCode,
+      phone,
+      idCategory,
+    };
+    postQuery(REGISTER_URL, postData)
+      .then((response: AxiosResponse) => {
+        clearErrors();
+        navigation.navigate("Booking");
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  };
+
+  const {
+    control,
+    handleSubmit,
+    clearErrors,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: yupResolver(validationSchema),
+  });
 
   return (
     <>
-      <BackgroundImg />
       <View style={styles.container}>
-        <View style={styles.wrapper}>
-          <Text style={styles.text}>Prénom</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Mickaël"
+        <BackgroundImg />
+        <View style={styles.form}>
+          <Controller
+            control={control}
+            name="firstName"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputGroup
+                label="Prénom"
+                value={value}
+                placeholder="Mickael"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={!!error}
+                errorDetails={error?.message}
+              />
+            )}
           />
-          <Text style={styles.text}>Nom</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Noel"
+          <Controller
+            control={control}
+            name="lastName"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputGroup
+                label="Nom"
+                value={value}
+                placeholder="Noël"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={!!error}
+                errorDetails={error?.message}
+              />
+            )}
           />
-          <Text style={styles.text}>Adresse mail</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="mickael.noel@exemple.com"
+          <Controller
+            control={control}
+            name="email"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputGroup
+                label="Adresse mail"
+                value={value}
+                placeholder="mickael.noel@marya.fr"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={!!error}
+                errorDetails={error?.message}
+              />
+            )}
           />
-          <Text style={styles.text}>Mot de passe</Text>
-          <TextInput
-            style={styles.input}
-            secureTextEntry
+          <Controller
+            control={control}
+            name="password"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputGroup
+                label="Mot de passe"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                password
+                error={!!error}
+                errorDetails={error?.message}
+              />
+            )}
           />
-          <Text style={styles.text}>Adresse</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="55 avenue de la bonne aventure"
+          <Controller
+            control={control}
+            name="address"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputGroup
+                label="Adresse"
+                value={value}
+                placeholder="143 Rue Yves le Coz"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={!!error}
+                errorDetails={error?.message}
+              />
+            )}
           />
-          <Text style={styles.text}>Code postal</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="75009"
+          <Controller
+            control={control}
+            name="city"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputGroup
+                label="Ville"
+                value={value}
+                placeholder="Versailles"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={!!error}
+                errorDetails={error?.message}
+              />
+            )}
           />
-          <Text style={styles.text}>Ville</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Paris"
+          <Controller
+            control={control}
+            name="postalCode"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputGroup
+                label="Code postal"
+                value={value}
+                placeholder="78000"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={!!error}
+                errorDetails={error?.message}
+              />
+            )}
           />
-          <Text style={styles.text}>Numéro de téléphone</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="0601020304"
+          <Controller
+            control={control}
+            name="phone"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputGroup
+                label="Numéro de téléphone"
+                value={value}
+                placeholder="0601020304"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={!!error}
+                errorDetails={error?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="phone"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <SelectGroup label="Catégorie" value={value} onValueChange={onChange}/>
+            )}
           />
         </View>
         <View style={styles.button}>
-          <Button title="S'inscrire" color={colors.primary} />
+          <Button title="S'inscrire" onPress={handleSubmit(register)} />
         </View>
       </View>
     </>
@@ -82,11 +292,11 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
-  wrapper: {
-    width: "80%",
+  form: {
+    width: "100%",
   },
   text: {
     color: colors.text,
@@ -100,9 +310,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   button: {
-    position: "absolute",
-    bottom: 0,
-    height: 60,
-    alignItems: "center",
+    width: "60%",
+    margin: 10,
   },
 });
