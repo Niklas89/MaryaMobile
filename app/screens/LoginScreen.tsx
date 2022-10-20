@@ -1,10 +1,7 @@
 import React, { useContext, useState } from "react";
-import { StatusBar } from "expo-status-bar";
-import { IUser } from "../interfaces/IUser";
 import { AxiosFunction } from "../api/AxiosFunction";
 import { AxiosError, AxiosResponse } from "axios";
 import useAuth from "../hooks/useAuth";
-import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
 import { Button, Text, TextInput, View, StyleSheet } from "react-native";
 import { RouteParams } from "../navigation/RootNavigator";
@@ -44,7 +41,7 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         //setUserInfos(response.data);
         setAuth?.({ role, accessToken });
         navigation.navigate("BotMenu", {
-          screen: "Booking"
+          screen: "Booking",
         });
       })
       .catch((error: AxiosError) => {
