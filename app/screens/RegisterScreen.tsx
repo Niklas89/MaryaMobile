@@ -13,7 +13,9 @@ import { RouteParams } from "../navigation/RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 import SelectGroup from "../components/Form/SelectGroup";
+import routes from "../navigation/routes";
 import ErrorMessage from "../components/ErrorMessage";
+
 
 const REGISTER_URL = "auth/partner/register";
 const GETCATEGORY_URL = "service/category";
@@ -129,7 +131,7 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
     postQuery(REGISTER_URL, postData)
       .then((response: AxiosResponse) => {
         clearErrors();
-        //navigation.navigate("Register");
+        // navigation.navigate(routes.REGISTER);
       })
       .catch((error: AxiosError) => {
         setError(true);

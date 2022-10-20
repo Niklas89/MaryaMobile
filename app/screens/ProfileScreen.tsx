@@ -14,6 +14,7 @@ import ProfileHeader from "../components/ProfileHeader";
 import ListItemSeparator from "../components/lists/ListItemSeparator";
 import ErrorMessage from "../components/ErrorMessage";
 import { IUser } from "../interfaces/IUser";
+import routes from "../navigation/routes";
 
 type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
@@ -35,6 +36,8 @@ interface MenuItems {
   targetScreen?: keyof RouteParams;
 }
 
+const GETPROFILE_URL = "/partner/profile/";
+
 const menuItems: MenuItems[] = [
   {
     title: "Informations personnelles",
@@ -42,7 +45,7 @@ const menuItems: MenuItems[] = [
       name: "format-list-bulleted",
       backgroundColor: colors.secondary,
     },
-    targetScreen: "PersoInfos",
+    targetScreen: routes.PERSOINFOS,
   },
   {
     title: "Informations bancaires",
@@ -50,7 +53,7 @@ const menuItems: MenuItems[] = [
       name: "bank",
       backgroundColor: colors.quaternary,
     },
-    targetScreen: "BankDetails",
+    targetScreen: routes.BANKDETAILS,
   },
   {
     title: "Adresse",
@@ -58,7 +61,7 @@ const menuItems: MenuItems[] = [
       name: "card-account-mail",
       backgroundColor: colors.quinary,
     },
-    targetScreen: "Address",
+    targetScreen: routes.ADDRESS,
   },
   {
     title: "Catégorie de service",
@@ -66,7 +69,7 @@ const menuItems: MenuItems[] = [
       name: "walk",
       backgroundColor: colors.tertiary,
     },
-    targetScreen: "Category",
+    targetScreen: routes.CATEGORY,
   },
 ];
 
@@ -84,7 +87,7 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
   let warningMessage;
 
   useEffect(() => {
-    getQuery("/partner/profile/")
+    getQuery(GETPROFILE_URL)
       .then((response: AxiosResponse) => {
         setUserInfos({
           firstName: response.data.firstName,
@@ -95,11 +98,15 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
         });
       })
       .catch(() => {
-        navigation.navigate("Login");
+        navigation.navigate(routes.LOGIN);
       });
   }, []);
 
-  if (!userInfo.birthdate || !userInfo.IBAN || !userInfo.SIRET) {
+  if (
+    userInfo.birthdate === null ||
+    userInfo.IBAN === null ||
+    userInfo.SIRET === null
+  ) {
     warningMessage = (
       <View style={styles.innerContainer}>
         <ErrorMessage title="Veuillez mettre à jour vos informations personnels" />
@@ -145,7 +152,7 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
                 <View style={styles.footerButtons}>
                   <Button
                     title="Supprimer le compte"
-                    onPress={() => navigation.navigate("Booking")}
+                    onPress={() => navigation.navigate(routes.BOOKING)}
                     color={colors.tertiary}
                     accessibilityLabel="Supprimer le compte"
                   />
@@ -154,7 +161,7 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
                 <View style={styles.footerButtons}>
                   <Button
                     title="Déconnecter"
-                    onPress={() => navigation.navigate("Booking")}
+                    onPress={() => navigation.navigate(routes.BOOKING)}
                     color={colors.secondary}
                     accessibilityLabel="Déconnecter"
                   />

@@ -13,7 +13,9 @@ import { Controller, useForm } from "react-hook-form";
 import InputGroup from "../components/Form/InputGroup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "../components/Form/Button";
+import routes from "../navigation/routes";
 import ErrorMessage from "../components/ErrorMessage";
+
 
 type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
@@ -74,8 +76,8 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         console.log(response.data);
         //setUserInfos(response.data);
         setAuth?.({ role, accessToken });
-        navigation.navigate("BotMenu", {
-          screen: "Booking",
+        navigation.navigate(routes.BOTMENU, {
+          screen: routes.BOOKING,
         });
       })
       .catch((error: AxiosError) => {
