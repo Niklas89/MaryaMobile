@@ -1,4 +1,7 @@
 import React from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { AxiosFunction } from "../api/AxiosFunction";
+import { AxiosError, AxiosResponse } from "axios";
 import { Button, StyleSheet, FlatList, View } from "react-native";
 import { RouteParams } from "../navigation/RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -10,6 +13,7 @@ import ListItem from "../components/lists/ListItem";
 import ProfileHeader from "../components/ProfileHeader";
 import ListItemSeparator from "../components/lists/ListItemSeparator";
 import ErrorMessage from "../components/ErrorMessage";
+import { IUser } from "../interfaces/IUser";
 
 type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
@@ -38,7 +42,7 @@ const menuItems: MenuItems[] = [
       name: "format-list-bulleted",
       backgroundColor: colors.secondary,
     },
-    targetScreen: "Register",
+    targetScreen: "PersoInfos",
   },
   {
     title: "Informations bancaires",
@@ -46,7 +50,7 @@ const menuItems: MenuItems[] = [
       name: "bank",
       backgroundColor: colors.quaternary,
     },
-    targetScreen: "Booking",
+    targetScreen: "BankDetails",
   },
   {
     title: "Adresse",
@@ -54,7 +58,7 @@ const menuItems: MenuItems[] = [
       name: "card-account-mail",
       backgroundColor: colors.quinary,
     },
-    targetScreen: "Booking",
+    targetScreen: "Address",
   },
   {
     title: "Catégorie de service",
@@ -62,18 +66,54 @@ const menuItems: MenuItems[] = [
       name: "walk",
       backgroundColor: colors.tertiary,
     },
-    targetScreen: "Booking",
+    targetScreen: "Category",
   },
 ];
 
+const initialUserInfoValues = {
+  firstName: "",
+  email: "",
+  birthdate: "",
+  IBAN: "",
+  SIRET: "",
+};
+
 const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
+  const { getQuery } = AxiosFunction();
+  const [userInfo, setUserInfos] = useState<IUser>(initialUserInfoValues);
+  let warningMessage;
+
+  useEffect(() => {
+    getQuery("/partner/profile/")
+      .then((response: AxiosResponse) => {
+        setUserInfos({
+          firstName: response.data.firstName,
+          email: response.data.email,
+          birthdate: response.data.partner.birthdate,
+          IBAN: response.data.partner.IBAN,
+          SIRET: response.data.partner.SIRET,
+        });
+      })
+      .catch(() => {
+        navigation.navigate("Login");
+      });
+  }, []);
+
+  if (!userInfo.birthdate || !userInfo.IBAN || !userInfo.SIRET) {
+    warningMessage = (
+      <View style={styles.innerContainer}>
+        <ErrorMessage title="Veuillez mettre à jour vos informations personnels" />
+      </View>
+    );
+  }
+
   return (
     <Screen style={styles.screen}>
       <View>
         <ProfileHeader
-          title="Niklas E"
-          subTitle="niklas.edelstam@gmail.com"
-          image={require("../assets/img/niklas.jpg")}
+          title={userInfo.firstName}
+          subTitle={userInfo.email}
+          image={require("../assets/img/logo.png")}
         />
       </View>
 
@@ -99,11 +139,7 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
                 }
               />
             )}
-            ListHeaderComponent={
-              <View style={styles.innerContainer}>
-                <ErrorMessage title="Veuillez mettre à jour vos informations personnels" />
-              </View>
-            }
+            ListHeaderComponent={warningMessage}
             ListFooterComponent={
               <View style={styles.innerContainer}>
                 <View style={styles.footerButtons}>

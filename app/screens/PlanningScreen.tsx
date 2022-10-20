@@ -1,11 +1,12 @@
-import React from 'react';
+import React from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
 
 const PlanningScreen = () => {
-    return (
-        <div>
-
-        </div>
-    );
+  return (
+    <View>
+      <Text>Planning</Text>
+    </View>
+  );
 };
 
 export default PlanningScreen;

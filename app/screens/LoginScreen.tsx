@@ -44,7 +44,7 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         //setUserInfos(response.data);
         setAuth?.({ role, accessToken });
         navigation.navigate("BotMenu", {
-          screen: "Booking"
+          screen: "Booking",
         });
       })
       .catch((error: AxiosError) => {
