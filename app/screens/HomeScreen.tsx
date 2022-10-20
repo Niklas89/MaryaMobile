@@ -4,6 +4,7 @@ import { RouteParams } from "../navigation/RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/core";
 import BackgroundImg from "../components/BackgroundImg";
+import routes from "../navigation/routes";
 
 type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
@@ -31,14 +32,14 @@ const HomeScreen: React.FC<Props<"Home">> = ({ navigation }) => {
           <View style={styles.button}>
             <Button
               title="Connexion"
-              onPress={() => navigation.navigate("Login")}
+              onPress={() => navigation.navigate(routes.LOGIN)}
               color="#008F8C"
             />
           </View>
           <View style={styles.button}>
             <Button
               title="Inscription"
-              onPress={() => navigation.navigate("Register")}
+              onPress={() => navigation.navigate(routes.REGISTER)}
               color="#0FC2C0"
             />
           </View>
