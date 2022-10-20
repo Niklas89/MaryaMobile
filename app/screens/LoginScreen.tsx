@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { AxiosFunction } from "../api/AxiosFunction";
 import { AxiosError, AxiosResponse } from "axios";
 import useAuth from "../hooks/useAuth";
@@ -14,6 +14,8 @@ import InputGroup from "../components/Form/InputGroup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "../components/Form/Button";
 import routes from "../navigation/routes";
+import ErrorMessage from "../components/ErrorMessage";
+
 
 type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
@@ -41,6 +43,8 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
     email: "",
     password: "",
   };
+  const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | unknown>();
 
   const { postQuery } = AxiosFunction();
 
@@ -59,8 +63,6 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
   });
 
   const login = (data: FormValues) => {
-    console.log(data);
-
     const { email, password } = data;
     const postData = {
       email,
@@ -79,7 +81,8 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         });
       })
       .catch((error: AxiosError) => {
-        console.log(error);
+        setError(true);
+        setErrorMessage(error.response?.data);
       });
   };
 
@@ -94,6 +97,7 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.error}>{error && <ErrorMessage title={errorMessage} />}</View>
       <View style={styles.form}>
         <Controller
           control={control}
@@ -130,7 +134,8 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
             />
           )}
         />
-
+      </View>
+      <View style={styles.input}>
         <Button title="Se connecter" onPress={handleSubmit(login)} />
       </View>
     </View>
@@ -141,7 +146,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
   },
   form: {
     width: "80%",
@@ -150,13 +155,13 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   input: {
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#bbb",
-    borderRadius: 5,
-    paddingHorizontal: 14,
-    paddingVertical: 4,
+    marginBottom: 40,
+    width: "80%"
   },
+  error: {
+    marginTop: 40,
+    width: "80%"
+  }
 });
 
 export default LoginScreen;

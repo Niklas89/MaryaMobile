@@ -14,6 +14,8 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 import SelectGroup from "../components/Form/SelectGroup";
 import routes from "../navigation/routes";
+import ErrorMessage from "../components/ErrorMessage";
+
 
 const REGISTER_URL = "auth/partner/register";
 const GETCATEGORY_URL = "service/category";
@@ -59,6 +61,8 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
   };
 
   const [services, setServices] = useState<Array<IData>>();
+  const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | unknown>();
 
   const { postQuery, getQuery } = AxiosFunction();
 
@@ -130,7 +134,8 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
         // navigation.navigate(routes.REGISTER);
       })
       .catch((error: AxiosError) => {
-        console.log(error);
+        setError(true);
+        setErrorMessage(error.response?.data);
       });
   };
 
@@ -146,6 +151,10 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
   return (
     <>
       <View style={styles.container}>
+        <View style={styles.error}>
+          {error && <ErrorMessage title={errorMessage} />}
+        </View>
+
         <View style={styles.form}>
           <ScrollView>
             <Controller
@@ -300,8 +309,10 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
                 />
               )}
             />
-            <Button title="S'inscrire" onPress={handleSubmit(register)} />
           </ScrollView>
+        </View>
+        <View style={styles.input}>
+          <Button title="S'inscrire" onPress={handleSubmit(register)} />
         </View>
       </View>
     </>
@@ -313,7 +324,7 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: colors.white,
   },
@@ -324,15 +335,11 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   input: {
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#bbb",
-    borderRadius: 5,
-    paddingHorizontal: 14,
-    paddingVertical: 4,
+    marginBottom: 40,
+    width: "80%",
   },
-  button: {
-    width: "60%",
-    margin: 10,
+  error: {
+    marginTop: 40,
+    width: "80%",
   },
 });
