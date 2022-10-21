@@ -12,7 +12,7 @@ interface props {
 function ErrorMessage({ title }: props) {
   return (
     <View style={styles.container}>
-      <MaterialIcons name="error" size={40} color="black" />
+      <MaterialIcons name="error" size={25} color="black" />
       <View style={styles.detailsContainer}>
         <Text style={styles.title} numberOfLines={2}>
           {title}
@@ -26,11 +26,10 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     flexDirection: "row",
-    padding: 30,
-    paddingTop: 40,
-    paddingBottom: 40,
     backgroundColor: colors.error,
     borderRadius: 5,
+    paddingLeft: 20,
+    paddingVertical: 8
   },
   detailsContainer: {
     flex: 1,
@@ -38,7 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    fontSize: 18,
+    fontSize: 12,
     fontWeight: "900",
     color: colors.text,
   },
