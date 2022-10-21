@@ -96,6 +96,7 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <BackgroundImg />
       <View style={styles.error}>{error && <ErrorMessage title={errorMessage} />}</View>
       <View style={styles.form}>
         <Controller
