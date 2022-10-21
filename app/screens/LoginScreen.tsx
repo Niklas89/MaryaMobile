@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { AxiosFunction } from "../api/AxiosFunction";
 import { AxiosError, AxiosResponse } from "axios";
 import useAuth from "../hooks/useAuth";
-import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
 import { View, StyleSheet } from "react-native";
 import { RouteParams } from "../navigation/RootNavigator";
