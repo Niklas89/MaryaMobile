@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { AxiosFunction } from "../api/AxiosFunction";
 import { AxiosError, AxiosResponse } from "axios";
 import useAuth from "../hooks/useAuth";
@@ -95,9 +95,8 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.error}>
-        {error && <ErrorMessage title={errorMessage} />}
-      </View>
+      <BackgroundImg />
+      <View style={styles.error}>{error && <ErrorMessage title={errorMessage} />}</View>
       <View style={styles.form}>
         <Controller
           control={control}

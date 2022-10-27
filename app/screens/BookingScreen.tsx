@@ -1,18 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { RouteParams } from "../navigation/RootNavigator";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RouteProp } from "@react-navigation/core";
-
+import { StyleSheet, Text, View } from "react-native";
+import { AxiosResponse } from "axios";
+import { AxiosFunction } from "../api/AxiosFunction";
+import { IBooking, IBookings } from "../interfaces/IBooking";
+import { IService } from "../interfaces/IService";
 
 const BookingScreen = () => {
-  const { auth, setAuth } = useAuth();
+  const { getQuery } = AxiosFunction();
+  const [services, setServices] = useState<IService[]>();
+  const [bookings, setBookings] = useState<IBooking[]>();
+
+  useEffect(() => {
+    getQuery("/partner/getBooking").then((res: AxiosResponse) => {
+      //console.log(res.data?.[0].services?.[0].bookings);
+      setServices?.(res.data?.[0].services);
+      setBookings?.(res.data?.[0].services?.[0].bookings);
+    });
+  }, []);
+
+  function getServices() {
+    services?.forEach((service: IService, index: any) => {
+      //ici récupéré les données
+    });
+  }
+  console.log(getServices());
   return (
     <View>
-      <Text>
-        BookingScreen {auth?.role} {auth?.accessToken}
-      </Text>
+      {bookings?.map((booking: IBooking) => {
+        return <Text>Pour les services {booking.totalPrice}</Text>;
+      })}
     </View>
   );
 };

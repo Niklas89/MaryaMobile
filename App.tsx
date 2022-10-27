@@ -4,6 +4,8 @@ import { RootNavigator } from "./app/navigation/RootNavigator";
 import AuthContext from "./app/context/AuthProvider";
 import TabNavigator from "./app/navigation/TabNavigator";
 import { IUserData } from "./app/interfaces/IAuthProvider";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { IJwtPayload } from "./app/interfaces/IJwtPayload";
 import authStorage from "./app/auth/storage";
 import * as SplashScreen from "expo-splash-screen";
