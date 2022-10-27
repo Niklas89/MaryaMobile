@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import { AxiosFunction } from "../api/AxiosFunction";
 import { AxiosError, AxiosResponse } from "axios";
 import useAuth from "../hooks/useAuth";
+import cache from "../utility/cache"; // new auth
+import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
 import { View, StyleSheet } from "react-native";
 import { RouteParams } from "../navigation/RootNavigator";
@@ -14,7 +16,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "../components/Form/Button";
 import routes from "../navigation/routes";
 import ErrorMessage from "../components/ErrorMessage";
-
+import authStorage from "../auth/storage";
 
 type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
@@ -36,7 +38,6 @@ type FormValues = {
 
 const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
   //const [userInfo, setUserInfos] = useState<IUser>(initialValues);
-  // const { setAuth, persist, setPersist } = useAuth();
   const { setAuth } = useAuth();
   const values = {
     email: "",
@@ -44,7 +45,6 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
   };
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
-
   const { postQuery } = AxiosFunction();
 
   const validationSchema = Yup.object().shape({
@@ -74,10 +74,9 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         const role = response.data.idRole;
         console.log(response.data);
         //setUserInfos(response.data);
+        // setAuth in state and store accesstoken in SecureStore
         setAuth?.({ role, accessToken });
-        navigation.navigate(routes.BOTMENU, {
-          screen: routes.BOOKING,
-        });
+        authStorage.storeToken(accessToken);
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -156,12 +155,12 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 40,
-    width: "80%"
+    width: "80%",
   },
   error: {
     marginTop: 40,
-    width: "80%"
-  }
+    width: "80%",
+  },
 });
 
 export default LoginScreen;

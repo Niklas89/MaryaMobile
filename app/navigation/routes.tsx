@@ -9,5 +9,4 @@ export default Object.freeze({
   PROFILE: "Profile",
   PLANNING: "Planning",
   BOOKING: "Booking",
-  BOTMENU: "BotMenu",
 });
