@@ -15,6 +15,8 @@ import ListItemSeparator from "../components/lists/ListItemSeparator";
 import ErrorMessage from "../components/ErrorMessage";
 import { IUser } from "../interfaces/IUser";
 import routes from "../navigation/routes";
+import useAuth from "../hooks/useAuth";
+import authStorage from "../auth/storage";
 
 type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
@@ -37,6 +39,7 @@ interface MenuItems {
 }
 
 const GETPROFILE_URL = "/partner/profile/";
+const LOGOUT_URL = "/logout/";
 
 const menuItems: MenuItems[] = [
   {
@@ -82,8 +85,12 @@ const initialUserInfoValues = {
 };
 
 const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
-  const { getQuery } = AxiosFunction();
   const [userInfo, setUserInfos] = useState<IUser>(initialUserInfoValues);
+  const { setAuth } = useAuth();
+  const { getQuery } = AxiosFunction();
+  const [stateLogout, setStateLogout] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | unknown>();
   let warningMessage;
 
   useEffect(() => {
@@ -97,8 +104,8 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
           SIRET: response.data.partner.SIRET,
         });
       })
-      .catch(() => {
-        navigation.navigate(routes.LOGIN);
+      .catch((error: AxiosError) => {
+        console.log(error);
       });
   }, []);
 
@@ -114,6 +121,19 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
     );
   }
 
+  useEffect(() => {
+    if (stateLogout) {
+      getQuery(LOGOUT_URL)
+        .then((response: AxiosResponse) => {
+          setAuth?.({});
+          authStorage.removeToken();
+        })
+        .catch(() => {
+          setError(true);
+          //setErrorMessage(error.response?.data);
+        });
+    }
+  }, [stateLogout]);
   return (
     <Screen style={styles.screen}>
       <View>
@@ -125,6 +145,10 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
       </View>
 
       <View style={styles.container}>
+        <View style={styles.error}>
+          {/* Display this error message if logout failed */}
+          {error && <ErrorMessage title={errorMessage} />}
+        </View>
         <View style={styles.innerContainer}>
           <FlatList
             data={menuItems}
@@ -161,7 +185,7 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
                 <View style={styles.footerButtons}>
                   <Button
                     title="Déconnecter"
-                    onPress={() => navigation.navigate(routes.BOOKING)}
+                    onPress={() => setStateLogout(true)}
                     color={colors.secondary}
                     accessibilityLabel="Déconnecter"
                   />
@@ -206,5 +230,9 @@ const styles = StyleSheet.create({
   },
   view: {
     flex: 1,
+  },
+  error: {
+    marginTop: 40,
+    width: "80%",
   },
 });
