@@ -20,7 +20,6 @@ const getToken = async () => {
 
 const getUser = async () => {
   const token = await getToken();
-  // return
   return token ? token : null;
 };
 
