@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { AxiosFunction } from "../api/AxiosFunction";
 import { AxiosError, AxiosResponse } from "axios";
 import useAuth from "../hooks/useAuth";
-import cache from "../utility/cache"; // new auth
 import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
 import { View, StyleSheet } from "react-native";
@@ -14,7 +13,6 @@ import { Controller, useForm } from "react-hook-form";
 import InputGroup from "../components/Form/InputGroup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "../components/Form/Button";
-import routes from "../navigation/routes";
 import ErrorMessage from "../components/ErrorMessage";
 import authStorage from "../auth/storage";
 
@@ -77,6 +75,17 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         // setAuth in state and store accesstoken in SecureStore
         setAuth?.({ role, accessToken });
         authStorage.storeToken(accessToken);
+        /* If we need to access the token in the cookie :
+        const setCookie = response.headers["set-cookie"];
+        let cookieValue;
+        let splitone;
+        if (setCookie != undefined)
+          cookieValue = setCookie[0] ? setCookie[0] : null;
+        const cookieSplitOne = cookieValue?.split(";");
+        if (cookieSplitOne != undefined) splitone = cookieSplitOne[0];
+        const cookieSplitTwo = splitone?.split("=");
+        if (cookieSplitTwo != undefined) console.log(cookieSplitTwo[1]);
+        */
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -96,7 +105,9 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <BackgroundImg />
-      <View style={styles.error}>{error && <ErrorMessage title={errorMessage} />}</View>
+      <View style={styles.error}>
+        {error && <ErrorMessage title={errorMessage} />}
+      </View>
       <View style={styles.form}>
         <Controller
           control={control}
