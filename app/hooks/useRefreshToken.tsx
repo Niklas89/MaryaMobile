@@ -1,7 +1,6 @@
 import axios from "../api/axios";
 import useAuth from "./useAuth";
 import authStorage from "../auth/storage";
-import { AxiosError, AxiosResponse } from "axios";
 
 const useRefreshToken = () => {
   const { auth, setAuth } = useAuth();
