@@ -86,7 +86,7 @@ const initialUserInfoValues = {
 
 const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
   const [userInfo, setUserInfos] = useState<IUser>(initialUserInfoValues);
-  const { setAuth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const { getQuery } = AxiosFunction();
   const [stateLogout, setStateLogout] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
@@ -105,7 +105,9 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
         });
       })
       .catch((error: AxiosError) => {
-        console.log(error);
+        console.log("AxiosError at getProfile: " + error?.response?.status);
+        console.log(auth?.role);
+        console.log(auth?.accessToken);
       });
   }, []);
 
@@ -125,8 +127,8 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
     if (stateLogout) {
       getQuery(LOGOUT_URL)
         .then((response: AxiosResponse) => {
-          setAuth?.({});
           authStorage.removeToken();
+          setAuth?.({});
         })
         .catch(() => {
           setError(true);
