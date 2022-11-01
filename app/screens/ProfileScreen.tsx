@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { AxiosFunction } from "../api/AxiosFunction";
 import { AxiosError, AxiosResponse } from "axios";
-import { Button, StyleSheet, FlatList, View } from "react-native";
+import { Button, StyleSheet, FlatList, View, Alert } from "react-native";
 import { RouteParams } from "../navigation/RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/core";
@@ -39,6 +39,7 @@ interface MenuItems {
 }
 
 const GETPROFILE_URL = "/partner/profile/";
+const DISABLEPROFILE_URL = "/user/inactivate/";
 const LOGOUT_URL = "/logout/";
 
 const menuItems: MenuItems[] = [
@@ -87,7 +88,7 @@ const initialUserInfoValues = {
 const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
   const [userInfo, setUserInfos] = useState<IUser>(initialUserInfoValues);
   const { auth, setAuth } = useAuth();
-  const { getQuery } = AxiosFunction();
+  const { getQuery, patchQuery } = AxiosFunction();
   const [stateLogout, setStateLogout] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
@@ -122,6 +123,35 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
       </View>
     );
   }
+
+  const disableProfile = () => {
+    patchQuery(DISABLEPROFILE_URL, userInfo)
+      .then((response: AxiosResponse) => {
+        authStorage.removeToken();
+        setAuth?.({});
+      })
+      .catch(() => {
+        setError(true);
+        //setErrorMessage(error.response?.data);
+      });
+  };
+
+  const askDisableProfile = () =>
+    Alert.alert(
+      "Suppression du compte",
+      'Cliquez sur "Supprimer" si vous voulez vraiment supprimer votre compte. Vous serez déconnecté.',
+      [
+        {
+          text: "Annuler",
+          onPress: () => console.log("Annuler"),
+          style: "cancel",
+        },
+        {
+          text: "Supprimer",
+          onPress: () => disableProfile(),
+        },
+      ]
+    );
 
   useEffect(() => {
     if (stateLogout) {
@@ -178,7 +208,7 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
                 <View style={styles.footerButtons}>
                   <Button
                     title="Supprimer le compte"
-                    onPress={() => navigation.navigate(routes.BOOKING)}
+                    onPress={askDisableProfile}
                     color={colors.tertiary}
                     accessibilityLabel="Supprimer le compte"
                   />
