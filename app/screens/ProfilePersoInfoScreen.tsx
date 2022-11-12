@@ -1,5 +1,5 @@
-import React, { useCallback, useRef, useState } from "react";
-import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../config/colors";
 import { AxiosFunction } from "../api/AxiosFunction";
 import * as Yup from "yup";
@@ -17,41 +17,74 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import useAuth from "../hooks/useAuth";
-import authStorage from "../auth/storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 const CHANGE_PERSONNAL_INFO_URL = "partner/personnal-info";
+const GETPROFILE_URL = "/partner/profile/";
 
 type FormValues = {
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
-  birthdate: string;
 };
 
 const ProfilePersoInfoScreen = () => {
-  const values = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    birthdate: "",
-  };
-
   const { auth, setAuth } = useAuth();
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const [formValues, setFormValues] = useState<FormValues>({
+    firstName: "Prénom",
+    lastName: "Nom",
+    email: "Adresse mail",
+    phone: "Numéro de téléphone",
+  });
 
   // DateTimePicker
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState<any>("date");
   const [show, setShow] = useState(false);
-  const [birthdatePicker, setBirthdatePicker] = useState("Date de naissance");
+  const [birthdatePicker, setBirthdatePicker] = useState("(jj/mm/aaaa)");
 
   // ajouter le get des infos personnelles
   const { patchQuery, getQuery } = AxiosFunction();
+
+  useEffect(() => {
+    getQuery(GETPROFILE_URL)
+      .then((response: AxiosResponse) => {
+        if (response.data.partner.birthdate != null)
+          setBirthdatePicker(response.data.partner.birthdate);
+
+        let firstName = "Prénom";
+        let lastName = "Nom";
+        let email = "Adresse mail";
+        let phone = "Numéro de téléphone";
+
+        if (response.data.firstName != null)
+          firstName = response.data.firstName;
+
+        if (response.data.lastName != null) lastName = response.data.lastName;
+
+        if (response.data.email != null) email = response.data.email;
+
+        if (response.data.partner.phone != null)
+          phone = response.data.partner.phone;
+
+        setFormValues({
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phone: phone,
+        });
+      })
+      .catch((error: AxiosError) => {
+        setError(true);
+        setErrorMessage(
+          "Erreur lors de la récupération des informations personnelles."
+        );
+      });
+  }, []);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -64,9 +97,6 @@ const ProfilePersoInfoScreen = () => {
       .matches(/^[A-Za-z ]+$/, "Le prenom doit contenir que des lettres.")
       .required("Merci de remplir le champ ci-dessus."),
     phone: Yup.string().required("Merci de remplir le champ ci-dessus."),
-    birthdate: Yup.date()
-      .max(new Date())
-      .required("Merci de remplir le champ ci-dessus."),
   });
 
   const renderBackdrop = useCallback(
@@ -90,7 +120,6 @@ const ProfilePersoInfoScreen = () => {
       phone,
       birthdate,
     };
-    console.log(postData);
     patchQuery(CHANGE_PERSONNAL_INFO_URL, postData)
       .then((response: AxiosResponse) => {
         clearErrors();
@@ -149,7 +178,7 @@ const ProfilePersoInfoScreen = () => {
                 }) => (
                   <InputGroup
                     value={value}
-                    placeholder="Nom"
+                    placeholder={formValues.lastName}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     error={!!error}
@@ -166,7 +195,7 @@ const ProfilePersoInfoScreen = () => {
                 }) => (
                   <InputGroup
                     value={value}
-                    placeholder="Prénom"
+                    placeholder={formValues.firstName}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     error={!!error}
@@ -183,7 +212,7 @@ const ProfilePersoInfoScreen = () => {
                 }) => (
                   <InputGroup
                     value={value}
-                    placeholder="Adresse mail"
+                    placeholder={formValues.email}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     error={!!error}
@@ -199,7 +228,7 @@ const ProfilePersoInfoScreen = () => {
                   fieldState: { error },
                 }) => (
                   <InputGroup
-                    placeholder="Numéro de téléphone"
+                    placeholder={formValues.phone}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -208,28 +237,15 @@ const ProfilePersoInfoScreen = () => {
                   />
                 )}
               />
-              <Controller
-                control={control}
-                name="birthdate"
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <InputGroup
-                    placeholder="Date de naissance (aaaa-mm-jj)"
-                    value={birthdatePicker}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={!!error}
-                    errorDetails={error?.message}
-                  />
-                )}
-              />
             </View>
+
             <View style={styles.input}>
+              <Text style={{ marginBottom: 10, marginTop: 10, marginLeft: 10 }}>
+                Date de naissance: {birthdatePicker}
+              </Text>
               <View style={{ marginBottom: 20 }}>
                 <Button
-                  title="Choisissez la date"
+                  title="Choisissez votre date"
                   onPress={() => showMode("date")}
                 />
               </View>
