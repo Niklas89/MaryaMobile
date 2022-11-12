@@ -19,9 +19,9 @@ export type RouteParams = {
   Home: undefined;
   Booking: undefined;
   Profile: undefined;
+  Password: undefined;
   ProfileNavigator: undefined;
   Planning: undefined;
-  BotMenu: any;
   screen: any;
   Address: undefined;
   Category: undefined;

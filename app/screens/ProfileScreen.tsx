@@ -52,6 +52,14 @@ const menuItems: MenuItems[] = [
     targetScreen: routes.PERSOINFOS,
   },
   {
+    title: "Mot de passe",
+    icon: {
+      name: "account-key",
+      backgroundColor: colors.primary,
+    },
+    targetScreen: routes.PASSWORD,
+  },
+  {
     title: "Informations bancaires",
     icon: {
       name: "bank",
@@ -132,7 +140,9 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
       })
       .catch(() => {
         setError(true);
-        //setErrorMessage(error.response?.data);
+        setErrorMessage(
+          "Votre profil n'a pas pu être supprimé. Veuillez nous contacter."
+        );
       });
   };
 
@@ -162,7 +172,7 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
         })
         .catch(() => {
           setError(true);
-          //setErrorMessage(error.response?.data);
+          setErrorMessage("La déconnection a échoué. Veuillez nous contacter.");
         });
     }
   }, [stateLogout]);
