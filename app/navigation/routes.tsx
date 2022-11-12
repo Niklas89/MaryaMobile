@@ -1,6 +1,7 @@
 export default Object.freeze({
   BANKDETAILS: "BankDetails",
   PERSOINFOS: "PersoInfos",
+  PASSWORD: "Password",
   CATEGORY: "Category",
   ADDRESS: "Address",
   REGISTER: "Register",

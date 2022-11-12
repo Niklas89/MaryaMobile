@@ -4,6 +4,7 @@ import ProfileAddressScreen from "../screens/ProfileAddressScreen";
 import ProfileCategoryScreen from "../screens/ProfileCategoryScreen";
 import ProfilePersoInfoScreen from "../screens/ProfilePersoInfoScreen";
 import ProfileBankDetailsScreen from "../screens/ProfileBankDetailsScreen";
+import ProfilePasswordScreen from "../screens/ProfilePasswordScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import { RouteParams } from "./RootNavigator";
 import colors from "../config/colors";
@@ -42,6 +43,11 @@ const ProfileNavigator = () => (
       name="PersoInfos"
       component={ProfilePersoInfoScreen}
       options={{ title: "Informations personnelles" }}
+    />
+    <Stack.Screen
+      name="Password"
+      component={ProfilePasswordScreen}
+      options={{ title: "Mot de passe" }}
     />
     <Stack.Screen
       name="BankDetails"
