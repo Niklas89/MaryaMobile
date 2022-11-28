@@ -31,9 +31,9 @@ const ProfileAddressScreen = () => {
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [formValues, setFormValues] = useState<FormValues>({
-    address: "address",
-    postalCode: "postalCode",
-    city: "city",
+    address: "",
+    postalCode: "",
+    city: "",
   });
 
   const { patchQuery, getQuery } = AxiosFunction();
@@ -41,9 +41,9 @@ const ProfileAddressScreen = () => {
   useEffect(() => {
     getQuery(GETPROFILE_URL)
       .then((response: AxiosResponse) => {
-        let address = "address";
-        let postalCode = "postalCode";
-        let city = "city";
+        let address = "Adresse";
+        let postalCode = "Code Postal";
+        let city = "Ville";
 
         if (response.data.partner.address != null)
           address = response.data.partner.address;

@@ -38,7 +38,7 @@ const ProfileCategoryScreen = () => {
   const [actualCategoryId, setActualCategoryId] = useState<number>();
   const [actualCategoryName, setActualCategoryName] = useState<string>();
   const [formValues, setFormValues] = useState<FormValues>({
-    idCategory: "idCategory",
+    idCategory: "",
   });
 
   const { patchQuery, getQuery } = AxiosFunction();
@@ -59,7 +59,7 @@ const ProfileCategoryScreen = () => {
   useEffect(() => {
     getQuery(GETPROFILE_URL)
       .then((response: AxiosResponse) => {
-        let idCategory = "idCategory";
+        let idCategory = "Catégorie";
 
         if (response.data.partner.idCategory != null)
           idCategory = response.data.partner.idCategory;

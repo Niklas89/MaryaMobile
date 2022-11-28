@@ -30,8 +30,8 @@ const ProfileBankDetailsScreen = () => {
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [formValues, setFormValues] = useState<FormValues>({
-    IBAN: "IBAN",
-    SIRET: "SIRET",
+    IBAN: "",
+    SIRET: "",
   });
 
   const { patchQuery, getQuery } = AxiosFunction();
