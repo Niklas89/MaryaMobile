@@ -33,7 +33,7 @@ const InputGroup = ({
   error = false,
   errorDetails,
 }: InputGroupProps) => {
-  const [isFocus, setIsFocus] = useState<boolean>(false);  
+  const [isFocus, setIsFocus] = useState<boolean>(false);
   return (
     <View>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingLeft: 10,
     paddingVertical: 5,
+    backgroundColor: "#fff",
   },
   errorText: {
     color: colors.red,

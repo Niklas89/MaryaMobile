@@ -10,4 +10,5 @@ export default Object.freeze({
   PROFILE: "Profile",
   PLANNING: "Planning",
   BOOKING: "Booking",
+  RESETPASSWORD: "ResetPassword",
 });

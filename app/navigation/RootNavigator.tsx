@@ -5,6 +5,7 @@ import HomeScreen from "../screens/HomeScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import RegisterScreen from "../screens/RegisterScreen";
+import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import PlanningScreen from "../screens/PlanningScreen";
 import ProfileAddressScreen from "../screens/ProfileAddressScreen";
@@ -27,6 +28,7 @@ export type RouteParams = {
   Category: undefined;
   PersoInfos: undefined;
   BankDetails: undefined;
+  ResetPassword: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteParams>();
@@ -58,6 +60,11 @@ export const RootNavigator = () => {
       <Stack.Screen
         name="Register"
         component={RegisterScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPasswordScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
