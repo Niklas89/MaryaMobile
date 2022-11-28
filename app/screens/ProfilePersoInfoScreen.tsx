@@ -18,6 +18,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import useAuth from "../hooks/useAuth";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import moment from "moment";
 
 const CHANGE_PERSONNAL_INFO_URL = "partner/personnal-info";
 const GETPROFILE_URL = "/partner/profile/";
@@ -35,17 +36,17 @@ const ProfilePersoInfoScreen = () => {
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [formValues, setFormValues] = useState<FormValues>({
-    firstName: "Prénom",
-    lastName: "Nom",
-    email: "Adresse mail",
-    phone: "Numéro de téléphone",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
   });
 
   // DateTimePicker
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState<any>("date");
   const [show, setShow] = useState(false);
-  const [birthdatePicker, setBirthdatePicker] = useState("(jj/mm/aaaa)");
+  const [birthdatePicker, setBirthdatePicker] = useState();
 
   // ajouter le get des infos personnelles
   const { patchQuery, getQuery } = AxiosFunction();
@@ -144,14 +145,6 @@ const ProfilePersoInfoScreen = () => {
   const onDateSelected = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
-    let tempDate = new Date(currentDate);
-    let fDate =
-      tempDate.getDate() +
-      "/" +
-      (tempDate.getMonth() + 1) +
-      "/" +
-      tempDate.getFullYear();
-    setBirthdatePicker(fDate);
     setShow(false);
   };
 
@@ -241,24 +234,26 @@ const ProfilePersoInfoScreen = () => {
                   />
                 )}
               />
+              <Text style={{ marginBottom: 10, marginTop: 10, marginLeft: 10 }}>
+                Date de naissance :{" "}
+                {moment(birthdatePicker).format("DD/MM/YYYY")}
+              </Text>
             </View>
 
             <View style={styles.input}>
-              <Text style={{ marginBottom: 10, marginTop: 10, marginLeft: 10 }}>
-                Date de naissance: {birthdatePicker}
-              </Text>
-              <View style={{ marginBottom: 20 }}>
+              <View style={{ marginBottom: 50 }}>
                 <Button
                   color={colors.tertiary}
-                  title="Choisissez votre date"
+                  title="Séléctionner votre date de naissance"
                   onPress={() => showMode("date")}
                 />
               </View>
               {show && (
                 <DateTimePicker
                   testID="dateTimePicker"
+                  locale="fr-FR"
                   value={date}
-                  mode={mode}
+                  mode="date"
                   is24Hour={true}
                   display="default"
                   onChange={onDateSelected}
@@ -272,18 +267,21 @@ const ProfilePersoInfoScreen = () => {
             </View>
           </View>
         </ScrollView>
-
-        <BottomSheetModal
-          ref={bottomSheetRef}
-          index={0}
-          snapPoints={["25%"]}
-          backdropComponent={renderBackdrop}
-        >
-          <View style={styles.contentContainer}>
-            <Text style={styles.textModal}>Informations enregistrés. 🎉</Text>
-            <Text>Vos informations personnelles ont bien été enregistrés.</Text>
-          </View>
-        </BottomSheetModal>
+        <View>
+          <BottomSheetModal
+            ref={bottomSheetRef}
+            index={0}
+            snapPoints={["25%"]}
+            backdropComponent={renderBackdrop}
+          >
+            <View style={styles.contentContainer}>
+              <Text style={styles.textModal}>Informations enregistrés. 🎉</Text>
+              <Text>
+                Vos informations personnelles ont bien été enregistrés.
+              </Text>
+            </View>
+          </BottomSheetModal>
+        </View>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
@@ -295,6 +293,7 @@ const styles = StyleSheet.create({
   scroll: {
     width: "100%",
     height: "100%",
+    backgroundColor: colors.white,
   },
   container: {
     flex: 1,
@@ -311,9 +310,9 @@ const styles = StyleSheet.create({
   input: {
     width: "80%",
     marginHorizontal: 30,
+    marginTop: 10,
   },
   error: {
-    marginTop: 40,
     width: "80%",
   },
   contentContainer: {

@@ -198,6 +198,7 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
             ItemSeparatorComponent={ListItemSeparator}
             renderItem={({ item }) => (
               <ListItem
+
                 title={item.title}
                 IconComponent={
                   <Icon
@@ -246,13 +247,12 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   completeProfile: {
     backgroundColor: colors.error,
-    padding: 10,
+    paddingHorizontal: 10,
   },
   container: {
     flex: 1,
     justifyContent: "center",
     overflow: "hidden",
-    /*  alignItems: "center", */
     marginLeft: 15,
     marginRight: 15,
   },
@@ -260,8 +260,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     overflow: "hidden",
-    /* alignItems: "center", */
-    marginVertical: 20,
+    marginBottom: 10
   },
   footerButtons: {
     marginTop: 15,
@@ -274,7 +273,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   error: {
-    marginTop: 40,
     width: "80%",
   },
 });
