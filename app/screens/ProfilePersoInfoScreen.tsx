@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../config/colors";
 import { AxiosFunction } from "../api/AxiosFunction";
 import * as Yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import InputGroup from "../components/Form/InputGroup";
-import Button from "../components/Form/Button";
+import SubmitButton from "../components/Form/Button";
 import { AxiosError, AxiosResponse } from "axios";
 import ErrorMessage from "../components/ErrorMessage";
 import {
@@ -173,12 +173,13 @@ const ProfilePersoInfoScreen = () => {
                 control={control}
                 name="lastName"
                 render={({
-                  field: { onChange, value, onBlur },
+                  field: { onChange, onBlur, value },
                   fieldState: { error },
                 }) => (
                   <InputGroup
                     value={value}
-                    placeholder={formValues.lastName}
+                    defaultValue={formValues.lastName}
+                    placeholder="Nom de famille"
                     onChangeText={onChange}
                     onBlur={onBlur}
                     error={!!error}
@@ -195,7 +196,8 @@ const ProfilePersoInfoScreen = () => {
                 }) => (
                   <InputGroup
                     value={value}
-                    placeholder={formValues.firstName}
+                    defaultValue={formValues.firstName}
+                    placeholder="Prénom"
                     onChangeText={onChange}
                     onBlur={onBlur}
                     error={!!error}
@@ -212,7 +214,8 @@ const ProfilePersoInfoScreen = () => {
                 }) => (
                   <InputGroup
                     value={value}
-                    placeholder={formValues.email}
+                    defaultValue={formValues.email}
+                    placeholder="Adresse mail"
                     onChangeText={onChange}
                     onBlur={onBlur}
                     error={!!error}
@@ -228,7 +231,8 @@ const ProfilePersoInfoScreen = () => {
                   fieldState: { error },
                 }) => (
                   <InputGroup
-                    placeholder={formValues.phone}
+                    placeholder="Numéro de téléphone"
+                    defaultValue={formValues.phone}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -245,6 +249,7 @@ const ProfilePersoInfoScreen = () => {
               </Text>
               <View style={{ marginBottom: 20 }}>
                 <Button
+                  color={colors.tertiary}
                   title="Choisissez votre date"
                   onPress={() => showMode("date")}
                 />
@@ -260,8 +265,8 @@ const ProfilePersoInfoScreen = () => {
                 />
               )}
 
-              <Button
-                title="Enregistrer"
+              <SubmitButton
+                title="Enregistrer les informations"
                 onPress={handleSubmit(changePersoInfo)}
               />
             </View>

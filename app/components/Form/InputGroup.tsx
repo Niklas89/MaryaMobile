@@ -12,6 +12,7 @@ type InputGroupProps = {
   label?: string;
   placeholder?: string;
   value: string;
+  defaultValue?: string,
   password?: boolean;
   type?: KeyboardTypeOptions;
   onChangeText: (value: string) => void;
@@ -24,6 +25,7 @@ type InputGroupProps = {
 const InputGroup = ({
   label,
   placeholder,
+  defaultValue,
   value,
   password,
   type = "default",
@@ -39,6 +41,7 @@ const InputGroup = ({
         placeholder={placeholder}
         placeholderTextColor="#929294"
         value={value}
+        defaultValue={defaultValue}
         onChangeText={onChangeText}
         onBlur={() => setIsFocus(false)}
         onFocus={() => setIsFocus(true)}
