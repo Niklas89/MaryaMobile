@@ -12,7 +12,7 @@ type InputGroupProps = {
   label?: string;
   placeholder?: string;
   value: string;
-  defaultValue?: string,
+  defaultValue?: string;
   password?: boolean;
   type?: KeyboardTypeOptions;
   onChangeText: (value: string) => void;
@@ -49,7 +49,11 @@ const InputGroup = ({
         keyboardType={type}
         style={[
           styles.input,
-          error ? styles.inputBorderError : (isFocus ? styles.inputBorderFocus : styles.inputBorder),
+          error
+            ? styles.inputBorderError
+            : isFocus
+            ? styles.inputBorderFocus
+            : styles.inputBorder,
         ]}
       />
       {errorDetails && <Text style={styles.errorText}>{errorDetails}</Text>}
