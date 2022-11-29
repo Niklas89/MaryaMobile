@@ -172,7 +172,7 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
         })
         .catch(() => {
           setError(true);
-          setErrorMessage("La déconnection a échoué. Veuillez nous contacter.");
+          setErrorMessage("La déconnexion a échoué. Veuillez nous contacter.");
         });
     }
   }, [stateLogout]);
