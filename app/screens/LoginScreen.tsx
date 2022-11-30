@@ -4,7 +4,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import useAuth from "../hooks/useAuth";
 import BackgroundImg from "../components/BackgroundImg";
 import colors from "../config/colors";
-import { View, StyleSheet } from "react-native";
+import { Button, View, StyleSheet } from "react-native";
 import { RouteParams } from "../navigation/RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/core";
@@ -12,9 +12,10 @@ import * as Yup from "yup";
 import { Controller, useForm } from "react-hook-form";
 import InputGroup from "../components/Form/InputGroup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Button from "../components/Form/Button";
+import SubmitButton from "../components/Form/Button";
 import ErrorMessage from "../components/ErrorMessage";
 import authStorage from "../auth/storage";
+import routes from "../navigation/routes";
 
 type ScreenNavigationProp<T extends keyof RouteParams> = StackNavigationProp<
   RouteParams,
@@ -146,7 +147,17 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         />
       </View>
       <View style={styles.input}>
-        <Button title="Se connecter" onPress={handleSubmit(login)} />
+        <View style={styles.button}>
+          <SubmitButton title="Se connecter" onPress={handleSubmit(login)} />
+        </View>
+
+        <View style={styles.button}>
+          <Button
+            color={colors.secondary}
+            title="Mot de pass oublié ?"
+            onPress={() => navigation.navigate(routes.RESETPASSWORD)}
+          />
+        </View>
       </View>
     </View>
   );
@@ -156,6 +167,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    height: "100%",
     justifyContent: "space-between",
   },
   form: {
@@ -167,6 +179,9 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 40,
     width: "80%",
+  },
+  button: {
+    padding: 10,
   },
   error: {
     marginTop: 40,

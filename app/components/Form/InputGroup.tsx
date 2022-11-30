@@ -12,7 +12,7 @@ type InputGroupProps = {
   label?: string;
   placeholder?: string;
   value: string;
-  defaultValue?: string,
+  defaultValue?: string;
   password?: boolean;
   type?: KeyboardTypeOptions;
   onChangeText: (value: string) => void;
@@ -40,6 +40,7 @@ const InputGroup = ({
       <TextInput
         placeholder={placeholder}
         placeholderTextColor="#929294"
+        editable={true}
         value={value}
         defaultValue={defaultValue}
         onChangeText={onChangeText}
@@ -49,7 +50,11 @@ const InputGroup = ({
         keyboardType={type}
         style={[
           styles.input,
-          error ? styles.inputBorderError : (isFocus ? styles.inputBorderFocus : styles.inputBorder),
+          error
+            ? styles.inputBorderError
+            : isFocus
+            ? styles.inputBorderFocus
+            : styles.inputBorder,
         ]}
       />
       {errorDetails && <Text style={styles.errorText}>{errorDetails}</Text>}
@@ -80,6 +85,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingLeft: 10,
     paddingVertical: 5,
+    backgroundColor: "#fff",
   },
   errorText: {
     color: colors.red,
