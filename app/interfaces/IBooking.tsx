@@ -1,6 +1,3 @@
-import { ReactNode } from "react";
-import moment from "moment";
-
 export interface IBooking {
   id?: number;
   accepted?: boolean;

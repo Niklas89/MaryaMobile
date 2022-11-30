@@ -186,6 +186,7 @@ const styles = StyleSheet.create({
   scroll: {
     width: "100%",
     height: "100%",
+    backgroundColor: colors.white,
   },
   container: {
     flex: 1,
@@ -202,9 +203,9 @@ const styles = StyleSheet.create({
   input: {
     width: "80%",
     marginHorizontal: 30,
+    marginTop: 10,
   },
   error: {
-    marginTop: 40,
     width: "80%",
   },
   contentContainer: {

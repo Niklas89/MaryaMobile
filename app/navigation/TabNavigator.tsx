@@ -21,7 +21,7 @@ const TabNavigator = () => {
           paddingBottom: 10,
           paddingTop: 10,
         },
-        tabBarInactiveTintColor: "#fff",
+        tabBarInactiveTintColor: "#ffffff",
       }}
     >
       <Tab.Screen
@@ -29,7 +29,7 @@ const TabNavigator = () => {
         component={BookingScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid" size={25} color="#FFFFFF" />
+            <Ionicons name="grid" size={25} color={color} />
           ),
           tabBarLabel: "Demandes",
           title: "Demandes",
@@ -40,7 +40,7 @@ const TabNavigator = () => {
         component={PlanningScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar" size={25} color="#FFFFFF" />
+            <Ionicons name="calendar" size={25} color={color} />
           ),
           tabBarLabel: "Activité",
           title: "Activité",
@@ -51,7 +51,7 @@ const TabNavigator = () => {
         component={ProfileNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={25} color="#FFFFFF" />
+            <Ionicons name="person" size={25} color={color} />
           ),
           tabBarLabel: "Profil",
           headerShown: false,
