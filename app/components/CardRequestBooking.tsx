@@ -10,9 +10,6 @@ import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import useAuth from "../hooks/useAuth";
-import { RefreshControl, SafeAreaView } from "react-native";
-import routes from "../navigation/routes";
-import { DevSettings } from "react-native";
 
 interface ICardRequestBooking {
   appointmentDate: string | undefined;
@@ -23,24 +20,13 @@ interface ICardRequestBooking {
   idBooking: any;
 }
 
-const CardRequestBooking = (data: ICardRequestBooking, { navigate }: any) => {
+const CardRequestBooking = (data: ICardRequestBooking) => {
   const { getQuery, patchQuery } = AxiosFunction();
   const { auth, setAuth } = useAuth();
   const [error, setError] = useState<boolean>(false);
   const [serviceData, setServiceData] = useState<IService>();
   const [clientData, setClientData] = useState<IUser>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [userInfo, setUserInfos] = useState<IUser>();
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-
-  const wait = (timeout: any) => {
-    return new Promise((resolve) => setTimeout(resolve, timeout));
-  };
-
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    wait(2000).then(() => setRefreshing(false));
-  }, []);
 
   useEffect(() => {
     getQuery(`partner/client/${data?.idClient?.toString()}`).then(
@@ -80,16 +66,12 @@ const CardRequestBooking = (data: ICardRequestBooking, { navigate }: any) => {
       </Text>
     );
   }
-  const refresh = (
-    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-  );
 
   function acceptBooking(idBooking: number) {
     patchQuery(`booking/${idBooking?.toString()}`, {})
       .then((response: AxiosResponse) => {
         //Si l'enregistrement ce fait alors on dirige vers le planning
         setModalVisible(false);
-        refresh;
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -189,7 +171,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   dateCard: {
-    //color: "#9FC131",
     color: "#008F8C",
     fontSize: 17,
     marginBottom: 15,
