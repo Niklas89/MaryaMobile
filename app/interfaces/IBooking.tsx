@@ -7,13 +7,17 @@ export interface IBooking {
   totalPrice?: number;
   idService?: number;
   idClient?: number;
-  cancelDate?: string;
-  isCancelled?: boolean;
-  serviceDone?: boolean;
-  isPaid?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  idPartner?: number;
+  data?: {
+    id?: number;
+    accepted?: boolean;
+    appointmentDate?: string;
+    description?: string;
+    nbHours?: number;
+    totalPrice?: number;
+    idService?: number;
+    message?: string;
+    idClient?: number;
+  };
 }
 
 export interface IGetBooking {

@@ -7,7 +7,7 @@ export const AxiosFunction = () => {
     return axiosPrivate.post(`${path}`, data);
   }
 
-  function patchQuery(path: string, data: object): Promise<any> {
+  function patchQuery(path: string, data?: object): Promise<any> {
     return axiosPrivate.patch(`${path}`, data);
   }
 

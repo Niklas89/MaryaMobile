@@ -6,13 +6,14 @@ import { IBooking, IBookings } from "../interfaces/IBooking";
 import { IService } from "../interfaces/IService";
 import { ICategory } from "../interfaces/ICategory";
 import CardRequestBooking from "../components/CardRequestBooking";
+import { ScrollView } from "react-native-gesture-handler";
 
 const BookingScreen = () => {
   const { getQuery } = AxiosFunction();
   const [services, setServices] = useState<IService[]>();
   const [categories, setCategories] = useState<ICategory[]>();
   const [bookings, setBookings] = useState<IBooking[]>();
-  //const [client, setClient] = useState<IUser>();
+
   // initialisation de currentService à null
   let currentService: IService | null = null;
 
@@ -69,24 +70,33 @@ const BookingScreen = () => {
   }
 
   return (
-    <View>
-      {bookings?.map((booking: IBooking, index: any) => {
-        return (
-          <>
-            <CardRequestBooking
-              idClient={booking.idClient}
-              idService={booking.idService}
-              appointmentDate={booking.appointmentDate}
-              description={booking.description}
-              nbHours={booking.nbHours}
-            />
-          </>
-        );
-      })}
-    </View>
+    <ScrollView style={styles.scroll}>
+      <View>
+        {bookings?.map((booking: IBooking, index: any) => {
+          return (
+            <View key={booking.id}>
+              <CardRequestBooking
+                idClient={booking.idClient}
+                idService={booking.idService}
+                appointmentDate={booking.appointmentDate}
+                description={booking.description}
+                nbHours={booking.nbHours}
+                idBooking={booking.id}
+              />
+            </View>
+          );
+        })}
+      </View>
+    </ScrollView>
   );
 };
 
 export default BookingScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  scroll: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "white",
+  },
+});
