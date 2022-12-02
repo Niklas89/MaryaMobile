@@ -6,11 +6,32 @@ import CardBooking from "../components/CardBooking";
 import colors from "../config/colors";
 import { IBooking } from "../interfaces/IBooking";
 
+type Booking = {
+  id?: number;
+  accepted: boolean;
+  appointmentDate: string;
+  description: string;
+  nbHours: number;
+  totalPrice: number;
+  idService: number;
+  idClient: number;
+  booking: {
+    id?: number;
+    accepted: boolean;
+    appointmentDate: string;
+    description: string;
+    nbHours: number;
+    totalPrice: number;
+    idService: number;
+    idClient: number;
+  };
+};
+
 const PlanningScreen = () => {
   const [valueSelected, setValueSelected] = useState<string>("ongoing");
-  const [pastData, setPastData] = useState<Array<IBooking>>();
-  const [currentDayData, setCurrentDayData] = useState<Array<IBooking>>();
-  const [futureData, setFutureData] = useState<Array<IBooking>>();
+  const [pastData, setPastData] = useState<Array<Booking>>();
+  const [currentDayData, setCurrentDayData] = useState<Array<Booking>>();
+  const [futureData, setFutureData] = useState<Array<Booking>>();
 
   const URL = "partner/booking/";
 
@@ -19,9 +40,15 @@ const PlanningScreen = () => {
 
   const getData = (dataType: string) => {
     getQuery(URL + dataType).then((response: AxiosResponse) => {
-      dataType === "future" && setFutureData(response.data.partner.bookings);
-      dataType === "past" && setPastData(response.data.partner.bookings);
-      dataType === "present" && setCurrentDayData(response.data.partner.bookings);
+      dataType === "future" &&
+        response.data &&
+        setFutureData(response.data.partner.bookings);
+      dataType === "past" &&
+        response.data &&
+        setPastData(response.data.partner.bookings);
+      dataType === "present" &&
+        response.data &&
+        setCurrentDayData(response.data.partner.bookings);
     });
   };
 
@@ -54,27 +81,54 @@ const PlanningScreen = () => {
           <ScrollView style={styles.scrollContainer}>
             <View style={styles.planningContainer}>
               <Text style={styles.planningText}>Aujourd'hui</Text>
-              {currentDayData &&
-                currentDayData.map((booking: IBooking) => {
-                  return <CardBooking data={booking} />;
-                })}
+              {currentDayData ? (
+                currentDayData.map((booking: Booking, index: number) => {
+                  return (
+                    <View key={index}>
+                      <CardBooking booking={booking} />
+                    </View>
+                  );
+                })
+              ) : (
+                <Text style={{ color: colors.text, textAlign: "center" }}>
+                  Pas de prestations pour aujourd'hui.
+                </Text>
+              )}
             </View>
             <View style={styles.planningContainer}>
               <Text style={styles.planningText}>A venir</Text>
-              {futureData &&
-                futureData.map((booking: IBooking) => {
-                  return <CardBooking data={booking} />;
-                })}
+              {futureData ? (
+                futureData.map((booking: Booking, index: number) => {
+                  return (
+                    <View key={index}>
+                      <CardBooking booking={booking} />
+                    </View>
+                  );
+                })
+              ) : (
+                <Text style={{ color: colors.text, textAlign: "center" }}>
+                  Pas de prestations à venir.
+                </Text>
+              )}
             </View>
           </ScrollView>
         )}
         {valueSelected === "finished" && (
           <View style={styles.planningContainer}>
             <Text style={styles.planningText}>Passés</Text>
-            {pastData &&
-              pastData.map((booking: IBooking) => {
-                return <CardBooking data={booking} />;
-              })}
+            {pastData ? (
+              pastData.map((booking: Booking, index: number) => {
+                return (
+                  <View key={index}>
+                    <CardBooking booking={booking} />
+                  </View>
+                );
+              })
+            ) : (
+              <Text style={{ color: colors.text, textAlign: "center" }}>
+                Pas de prestations passées.
+              </Text>
+            )}
           </View>
         )}
       </>

@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Button,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import colors from "../config/colors";
 import { AxiosFunction } from "../api/AxiosFunction";
 import * as Yup from "yup";
@@ -9,16 +17,12 @@ import InputGroup from "../components/Form/InputGroup";
 import SubmitButton from "../components/Form/Button";
 import { AxiosError, AxiosResponse } from "axios";
 import ErrorMessage from "../components/ErrorMessage";
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetBackdrop,
-} from "@gorhom/bottom-sheet";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import useAuth from "../hooks/useAuth";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import moment from "moment";
+import Toast from "react-native-root-toast";
 
 const CHANGE_PERSONNAL_INFO_URL = "partner/personnal-info";
 const GETPROFILE_URL = "/partner/profile/";
@@ -31,10 +35,10 @@ type FormValues = {
 };
 
 const ProfilePersoInfoScreen = () => {
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { auth, setAuth } = useAuth();
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [formValues, setFormValues] = useState<FormValues>({
     firstName: "",
     lastName: "",
@@ -44,7 +48,6 @@ const ProfilePersoInfoScreen = () => {
 
   // DateTimePicker
   const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState<any>("date");
   const [show, setShow] = useState(false);
   const [birthdatePicker, setBirthdatePicker] = useState();
 
@@ -100,17 +103,6 @@ const ProfilePersoInfoScreen = () => {
     phone: Yup.string().required("Merci de remplir le champ ci-dessus."),
   });
 
-  const renderBackdrop = useCallback(
-    (props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
-    ),
-    []
-  );
-
   const changePersoInfo = (data: FormValues) => {
     const { firstName, lastName, email, phone } = data;
     const birthdate = date;
@@ -124,7 +116,8 @@ const ProfilePersoInfoScreen = () => {
     patchQuery(CHANGE_PERSONNAL_INFO_URL, postData)
       .then((response: AxiosResponse) => {
         clearErrors();
-        bottomSheetRef.current?.present();
+        setModalVisible(true);
+        setTimeout(() => setModalVisible(false), 4000);
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -142,148 +135,151 @@ const ProfilePersoInfoScreen = () => {
   });
 
   // DateTimePicker
-  const onDateSelected = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
+  const onDateSelected = (
+    event: DateTimePickerEvent,
+    selectedDate: Date | undefined
+  ) => {
     setShow(false);
-  };
-
-  const showMode = (currentMode: string) => {
-    setShow(true);
-    setMode(currentMode);
+    selectedDate && setDate(selectedDate);
   };
 
   return (
-    <GestureHandlerRootView>
-      <BottomSheetModalProvider>
-        <ScrollView style={styles.scroll}>
-          <View style={styles.container}>
-            <View style={styles.error}>
-              {error && <ErrorMessage title={errorMessage} />}
-            </View>
-            <View style={styles.form}>
-              <Controller
-                control={control}
-                name="lastName"
-                render={({
-                  field: { onChange, onBlur, value },
-                  fieldState: { error },
-                }) => (
-                  <InputGroup
-                    value={value}
-                    defaultValue={formValues.lastName}
-                    placeholder="Nom de famille"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={!!error}
-                    errorDetails={error?.message}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="firstName"
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <InputGroup
-                    value={value}
-                    defaultValue={formValues.firstName}
-                    placeholder="Prénom"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={!!error}
-                    errorDetails={error?.message}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="email"
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <InputGroup
-                    value={value}
-                    defaultValue={formValues.email}
-                    placeholder="Adresse mail"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={!!error}
-                    errorDetails={error?.message}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="phone"
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <InputGroup
-                    placeholder="Numéro de téléphone"
-                    defaultValue={formValues.phone}
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={!!error}
-                    errorDetails={error?.message}
-                  />
-                )}
-              />
-              <Text style={{ marginBottom: 10, marginTop: 10, marginLeft: 10 }}>
-                Date de naissance :{" "}
-                {moment(birthdatePicker).format("DD/MM/YYYY")}
-              </Text>
-            </View>
-
-            <View style={styles.input}>
-              <View style={{ marginBottom: 50 }}>
-                <Button
-                  color={colors.tertiary}
-                  title="Séléctionner votre date de naissance"
-                  onPress={() => showMode("date")}
-                />
-              </View>
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  locale="fr-FR"
-                  value={date}
-                  mode="date"
-                  is24Hour={true}
-                  display="default"
-                  onChange={onDateSelected}
+    <>
+      <ScrollView style={styles.scroll}>
+        <View style={styles.container}>
+          <View style={styles.error}>
+            {error && <ErrorMessage title={errorMessage} />}
+          </View>
+          <View style={styles.form}>
+            <Controller
+              control={control}
+              name="lastName"
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  defaultValue={formValues.lastName}
+                  placeholder="Nom de famille"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
                 />
               )}
-
-              <SubmitButton
-                title="Enregistrer les informations"
-                onPress={handleSubmit(changePersoInfo)}
-              />
-            </View>
-          </View>
-        </ScrollView>
-        <View>
-          <BottomSheetModal
-            ref={bottomSheetRef}
-            index={0}
-            snapPoints={["25%"]}
-            backdropComponent={renderBackdrop}
-          >
-            <View style={styles.contentContainer}>
-              <Text style={styles.textModal}>Informations enregistrés. 🎉</Text>
-              <Text>
-                Vos informations personnelles ont bien été enregistrés.
+            />
+            <Controller
+              control={control}
+              name="firstName"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  defaultValue={formValues.firstName}
+                  placeholder="Prénom"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="email"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  defaultValue={formValues.email}
+                  placeholder="Adresse mail"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="phone"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  placeholder="Numéro de téléphone"
+                  defaultValue={formValues.phone}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <View
+              style={{
+                marginBottom: 10,
+                marginTop: 10,
+                borderBottomWidth: 1,
+                borderColor: colors.grey,
+              }}
+            >
+              <Text
+                style={{
+                  marginLeft: 10,
+                  marginBottom: 10,
+                }}
+              >
+                {moment(date).format("DD/MM/YYYY")}
               </Text>
             </View>
-          </BottomSheetModal>
+          </View>
+
+          <View style={styles.input}>
+            <View style={{ marginBottom: 50 }}>
+              <Button
+                color={colors.tertiary}
+                title="Séléctionner votre date de naissance"
+                onPress={() => setShow(true)}
+              />
+            </View>
+            {show && (
+              <DateTimePicker
+                locale="fr-FR"
+                value={date}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={onDateSelected}
+              />
+            )}
+            <SubmitButton
+              title="Enregistrer les informations"
+              onPress={handleSubmit(changePersoInfo)}
+            />
+          </View>
         </View>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+      </ScrollView>
+      <Toast
+        visible={modalVisible}
+        position={480}
+        shadow={true}
+        animation={true}
+        hideOnPress={true}
+        backgroundColor={colors.modal}
+        textColor={colors.text}
+        shadowColor={colors.grey}
+      >
+        Vos informations ont bien été enregistrées.
+      </Toast>
+    </>
   );
 };
 
@@ -321,8 +317,28 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 5,
   },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 5,
+    flexDirection: "column",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  closePressable: {
+    alignItems: "flex-end",
+  },
   textModal: {
-    fontWeight: "bold",
-    fontSize: 18,
+    textAlign: "center",
+    color: colors.text,
+    marginTop: 15,
+    paddingBottom: 15,
   },
 });

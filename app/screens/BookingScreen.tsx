@@ -14,22 +14,20 @@ const BookingScreen = () => {
   useEffect(() => {
     getQuery("/partner/getBooking").then((res: AxiosResponse) => {
       //console.log(res.data?.[0].services?.[0].bookings);
-      setServices?.(res.data?.[0].services);
-      setBookings?.(res.data?.[0].services?.[0].bookings);
+      //setServices?.(res.data?.[0].services);
+      //setBookings?.(res.data?.[0].services?.[0].bookings);
     });
   }, []);
 
+  /*
   function getServices() {
     services?.forEach((service: IService, index: any) => {
       //ici récupéré les données
     });
-  }
-  console.log(getServices());
+  }*/
   return (
     <View>
-      {bookings?.map((booking: IBooking) => {
-        return <Text>Pour les services {booking.totalPrice}</Text>;
-      })}
+      <Text>test</Text>
     </View>
   );
 };
