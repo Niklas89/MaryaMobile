@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../config/colors";
 import { AxiosFunction } from "../api/AxiosFunction";
 import * as Yup from "yup";
@@ -9,13 +9,8 @@ import InputGroup from "../components/Form/InputGroup";
 import Button from "../components/Form/Button";
 import { AxiosError, AxiosResponse } from "axios";
 import ErrorMessage from "../components/ErrorMessage";
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetBackdrop,
-} from "@gorhom/bottom-sheet";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
+import { AntDesign } from "@expo/vector-icons";
+import Toast from "react-native-root-toast";
 
 const CHANGE_PROFESSIONAL_INFO_URL = "partner/professional-info";
 const GETPROFILE_URL = "/partner/profile/";
@@ -26,9 +21,9 @@ type FormValues = {
 };
 
 const ProfileBankDetailsScreen = () => {
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [formValues, setFormValues] = useState<FormValues>({
     IBAN: "",
     SIRET: "",
@@ -76,17 +71,6 @@ const ProfileBankDetailsScreen = () => {
       .required("Merci de remplir le champ ci-dessus."),
   });
 
-  const renderBackdrop = useCallback(
-    (props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
-    ),
-    []
-  );
-
   const changeProInfo = (data: FormValues) => {
     const { IBAN, SIRET } = data;
     const postData = {
@@ -96,7 +80,8 @@ const ProfileBankDetailsScreen = () => {
     patchQuery(CHANGE_PROFESSIONAL_INFO_URL, postData)
       .then((response: AxiosResponse) => {
         clearErrors();
-        bottomSheetRef.current?.present();
+        setModalVisible(true);
+        setTimeout(() => setModalVisible(false), 4000);
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -114,73 +99,68 @@ const ProfileBankDetailsScreen = () => {
   });
 
   return (
-    <GestureHandlerRootView>
-      <BottomSheetModalProvider>
-        <ScrollView style={styles.scroll}>
-          <View style={styles.container}>
-            <View style={styles.error}>
-              {error && <ErrorMessage title={errorMessage} />}
-            </View>
-            <View style={styles.form}>
-              <Controller
-                control={control}
-                name="IBAN"
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <InputGroup
-                    value={value}
-                    defaultValue={formValues.IBAN}
-                    placeholder="IBAN"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={!!error}
-                    errorDetails={error?.message}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="SIRET"
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <InputGroup
-                    value={value}
-                    defaultValue={formValues.SIRET}
-                    placeholder="SIRET"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={!!error}
-                    errorDetails={error?.message}
-                  />
-                )}
-              />
-
-              <Button
-                title="Enregistrer"
-                onPress={handleSubmit(changeProInfo)}
-              />
-            </View>
+    <>
+      <ScrollView style={styles.scroll}>
+        <View style={styles.container}>
+          <View style={styles.error}>
+            {error && <ErrorMessage title={errorMessage} />}
           </View>
-        </ScrollView>
+          <View style={styles.form}>
+            <Controller
+              control={control}
+              name="IBAN"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  defaultValue={formValues.IBAN}
+                  placeholder="IBAN"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
 
-        <BottomSheetModal
-          ref={bottomSheetRef}
-          index={0}
-          snapPoints={["25%"]}
-          backdropComponent={renderBackdrop}
+            <Controller
+              control={control}
+              name="SIRET"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  defaultValue={formValues.SIRET}
+                  placeholder="SIRET"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+
+            <Button title="Enregistrer" onPress={handleSubmit(changeProInfo)} />
+          </View>
+        </View>
+      </ScrollView>
+      <Toast
+          visible={modalVisible}
+          position={480}
+          shadow={true}
+          animation={true}
+          hideOnPress={true}
+          backgroundColor={colors.modal}
+          textColor={colors.text}
+          shadowColor={colors.grey}
         >
-          <View style={styles.contentContainer}>
-            <Text style={styles.textModal}>Informations enregistrés. 🎉</Text>
-            <Text>Vos informations bancaires ont bien été enregistrés.</Text>
-          </View>
-        </BottomSheetModal>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+          Vos informations ont bien été enregistrées.
+        </Toast>
+    </>
   );
 };
 
@@ -190,6 +170,7 @@ const styles = StyleSheet.create({
   scroll: {
     width: "100%",
     height: "100%",
+    backgroundColor: colors.white,
   },
   container: {
     flex: 1,
@@ -217,8 +198,28 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 5,
   },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 5,
+    flexDirection: "column",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  closePressable: {
+    alignItems: "flex-end",
+  },
   textModal: {
-    fontWeight: "bold",
-    fontSize: 18,
+    textAlign: "center",
+    color: colors.text,
+    marginTop: 15,
+    paddingBottom: 15,
   },
 });

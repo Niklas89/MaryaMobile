@@ -12,5 +12,6 @@ export default {
   red: "#8F1107",
   dark: "#0c0c0c",
   light: "#f8f4f4",
+  modal: "#F0F0F0",
   medium: "#6e6969",
 };
