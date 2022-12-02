@@ -9,15 +9,9 @@ import InputGroup from "../components/Form/InputGroup";
 import Button from "../components/Form/Button";
 import { AxiosError, AxiosResponse } from "axios";
 import ErrorMessage from "../components/ErrorMessage";
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetBackdrop,
-} from "@gorhom/bottom-sheet";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import useAuth from "../hooks/useAuth";
 import authStorage from "../auth/storage";
+import Toast from "react-native-root-toast";
 
 const CHANGEPASSWORD_URL = "user/edit-password";
 const LOGOUT_URL = "/logout/";
@@ -32,11 +26,10 @@ const ProfilePasswordScreen = () => {
     lastPassword: "",
     newPassword: "",
   };
-
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { auth, setAuth } = useAuth();
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const { patchQuery, getQuery } = AxiosFunction();
 
@@ -52,17 +45,6 @@ const ProfilePasswordScreen = () => {
       .required("Merci de remplir le champ ci-dessus."),
   });
 
-  const renderBackdrop = useCallback(
-    (props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
-    ),
-    []
-  );
-
   const changePassword = (data: FormValues) => {
     const { lastPassword, newPassword } = data;
 
@@ -73,7 +55,8 @@ const ProfilePasswordScreen = () => {
     patchQuery(CHANGEPASSWORD_URL, postData)
       .then((response: AxiosResponse) => {
         clearErrors();
-        bottomSheetRef.current?.present();
+        setModalVisible(true);
+        setTimeout(() => setModalVisible(false), 4000);
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -103,80 +86,72 @@ const ProfilePasswordScreen = () => {
   });
 
   return (
-    <GestureHandlerRootView>
-      <BottomSheetModalProvider>
-        <ScrollView style={styles.scroll}>
-          <View style={styles.container}>
-            <View style={styles.error}>
-              {error && <ErrorMessage title={errorMessage} />}
-            </View>
-
-            <View style={styles.form}>
-              <Controller
-                control={control}
-                name="lastPassword"
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <InputGroup
-                    value={value}
-                    placeholder="Ancien Mot de Passe"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    password
-                    error={!!error}
-                    errorDetails={error?.message}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="newPassword"
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <InputGroup
-                    value={value}
-                    placeholder="Nouveau Mot de Passe"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    password
-                    error={!!error}
-                    errorDetails={error?.message}
-                  />
-                )}
-              />
-            </View>
-            <View style={styles.input}>
-              <Button
-                title="Enregistrer"
-                onPress={handleSubmit(changePassword)}
-              />
-            </View>
+    <>
+      <ScrollView style={styles.scroll}>
+        <View style={styles.container}>
+          <View style={styles.error}>
+            {error && <ErrorMessage title={errorMessage} />}
           </View>
-        </ScrollView>
 
-        <BottomSheetModal
-          ref={bottomSheetRef}
-          index={0}
-          snapPoints={["25%"]}
-          backdropComponent={renderBackdrop}
-        >
-          <View style={styles.contentContainer}>
-            <Text style={styles.textModal}>
-              Félicitations, votre mot de passe a bien été changé. 🎉
-            </Text>
-            <Text>
-              Vous pouvez à présent vous déconnecter et vous reconnecter avec
-              votre nouveau mot de passe.
-            </Text>
-            <Button title="Se déconnecter" onPress={logout} />
+          <View style={styles.form}>
+            <Controller
+              control={control}
+              name="lastPassword"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  placeholder="Ancien Mot de Passe"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  password
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="newPassword"
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <InputGroup
+                  value={value}
+                  placeholder="Nouveau Mot de Passe"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  password
+                  error={!!error}
+                  errorDetails={error?.message}
+                />
+              )}
+            />
           </View>
-        </BottomSheetModal>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+          <View style={styles.input}>
+            <Button
+              title="Enregistrer"
+              onPress={handleSubmit(changePassword)}
+            />
+          </View>
+        </View>
+      </ScrollView>
+      <Toast
+        visible={modalVisible}
+        position={480}
+        shadow={true}
+        animation={true}
+        hideOnPress={true}
+        backgroundColor={colors.modal}
+        textColor={colors.text}
+        shadowColor={colors.grey}
+      >
+        Vos informations ont bien été enregistrées.
+      </Toast>
+    </>
   );
 };
 
