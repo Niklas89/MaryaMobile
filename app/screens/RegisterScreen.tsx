@@ -147,10 +147,11 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
     };
     postQuery(REGISTER_URL, postData)
       .then((response: AxiosResponse) => {
+        console.log("success");
         clearErrors();
         bottomSheetRef.current?.present();
       })
-      .catch((error: AxiosError) => {
+      .catch((error: AxiosError) => {      
         setError(true);
         setErrorMessage(error.response?.data);
       });
@@ -346,7 +347,7 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
         >
           <View style={styles.contentContainer}>
             <Text style={styles.textModal}>
-              Félicitations, votre compte a bien été crée. 🎉
+              Félicitations, votre compte a bien été créé. 🎉
             </Text>
             <Text>
               Vous pouvez à présent vous connecter afin de pouvoir commencer à

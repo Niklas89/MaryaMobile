@@ -1,37 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { RefreshControl, StyleSheet, Text, View } from "react-native";
 import { AxiosResponse } from "axios";
 import { AxiosFunction } from "../api/AxiosFunction";
-import { IBooking, IBookings } from "../interfaces/IBooking";
+import { IBooking } from "../interfaces/IBooking";
 import { IService } from "../interfaces/IService";
 import { ICategory } from "../interfaces/ICategory";
 import CardRequestBooking from "../components/CardRequestBooking";
+
 import { ScrollView } from "react-native-gesture-handler";
+import ModalBooking from "../components/ModalBooking";
+import useAuth from "../hooks/useAuth";
+import colors from "../config/colors";
 
 const BookingScreen = () => {
   const { getQuery } = AxiosFunction();
   const [services, setServices] = useState<IService[]>();
   const [categories, setCategories] = useState<ICategory[]>();
   const [bookings, setBookings] = useState<IBooking[]>();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [bookingAccepted, setBookingAccepted] = useState<number>(0);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [idBookingSelected, setIdBookingSelected] = useState<number>();
 
-  // initialisation de currentService à null
-  let currentService: IService | null = null;
+  const { userDataChange } = useAuth();
 
   useEffect(() => {
     getQuery("/partner/getBooking").then((res: AxiosResponse) => {
-      //on set les catégories
-      setCategories(res.data);
+      res.data && setCategories(res.data);
     });
-  }, []);
+  }, [bookingAccepted, userDataChange]);
 
   useEffect(() => {
-    //on appel la fonction une fois qu'on as les categories
     getServices();
   }, [categories]);
+
   /**
    * fonction qui permet de faire les foreach sur les catégories puis services pour avoir les different bookings
    */
-  function getServices() {
+  const getServices = () => {
     let bookings: IBooking[] = [];
     let services: IService[] = [];
 
@@ -47,17 +53,18 @@ const BookingScreen = () => {
     });
     //on trie les booking avec la fonction sortBoohingDates
     bookings.sort(sortBookingDates);
-    //on set les bookings et services
+
     setBookings(bookings);
     setServices(services);
-  }
+  };
+
   /**
    * Fonction qui permet de trier les dates dans appointementDate
    * @param a on donne une date d'appointementDate
    * @param b on donne une date d'appointementDate
    * @returns on retourne la valeur la plus petite
    */
-  function sortBookingDates(a: IBooking, b: IBooking) {
+  const sortBookingDates = (a: IBooking, b: IBooking) => {
     const key1 = new Date(a?.appointmentDate ? a?.appointmentDate : "now");
     const key2 = new Date(b?.appointmentDate ? b?.appointmentDate : "now");
     if (key1 < key2) {
@@ -67,26 +74,54 @@ const BookingScreen = () => {
     } else {
       return 1;
     }
-  }
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      getQuery("/partner/getBooking").then((res: AxiosResponse) => {
+        setCategories(res.data);
+      });
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   return (
-    <ScrollView style={styles.scroll}>
+    <ScrollView
+      style={[
+        styles.scroll,
+        modalVisible && { backgroundColor: "black", opacity: 0.5 },
+      ]}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View>
-        {bookings?.map((booking: IBooking, index: any) => {
-          return (
-            <View key={booking.id}>
-              <CardRequestBooking
-                idClient={booking.idClient}
-                idService={booking.idService}
-                appointmentDate={booking.appointmentDate}
-                description={booking.description}
-                nbHours={booking.nbHours}
-                idBooking={booking.id}
-              />
-            </View>
-          );
-        })}
+        {bookings &&
+          bookings.map((booking: IBooking) => {
+            return (
+              <View key={booking.id}>
+                <CardRequestBooking
+                  data={booking}
+                  setModalVisible={setModalVisible}
+                  setIdBookingSelected={setIdBookingSelected}
+                />
+              </View>
+            );
+          })}
+        {bookings?.length === 0 && (
+          <Text style={styles.noBookingText}>Pas de demandes en attente.</Text>
+        )}
       </View>
+      {idBookingSelected && (
+        <ModalBooking
+          bookingAccepted={bookingAccepted}
+          setBookingAccepted={setBookingAccepted}
+          id={idBookingSelected}
+          setModalVisible={setModalVisible}
+          modalVisible={modalVisible}
+        />
+      )}
     </ScrollView>
   );
 };
@@ -98,5 +133,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     backgroundColor: "white",
+  },
+  noBookingText: {
+    color: colors.text,
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 25,
   },
 });

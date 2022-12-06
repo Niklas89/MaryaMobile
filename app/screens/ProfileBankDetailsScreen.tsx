@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../config/colors";
 import { AxiosFunction } from "../api/AxiosFunction";
@@ -34,8 +34,8 @@ const ProfileBankDetailsScreen = () => {
   useEffect(() => {
     getQuery(GETPROFILE_URL)
       .then((response: AxiosResponse) => {
-        let IBAN = "IBAN";
-        let SIRET = "SIRET";
+        let IBAN;
+        let SIRET;
 
         if (response.data.partner.IBAN != null)
           IBAN = response.data.partner.IBAN;
@@ -81,7 +81,7 @@ const ProfileBankDetailsScreen = () => {
       .then((response: AxiosResponse) => {
         clearErrors();
         setModalVisible(true);
-        setTimeout(() => setModalVisible(false), 4000);
+        setTimeout(() => setModalVisible(false), 2500);
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -91,12 +91,18 @@ const ProfileBankDetailsScreen = () => {
 
   const {
     control,
+    reset,
     handleSubmit,
     clearErrors,
     formState: { errors },
   } = useForm<FormValues>({
+    defaultValues: useMemo(() => formValues, [formValues]),
     resolver: yupResolver(validationSchema),
   });
+
+  useEffect(() => {
+    reset(formValues);
+  }, [formValues]);
 
   return (
     <>
@@ -110,12 +116,13 @@ const ProfileBankDetailsScreen = () => {
               control={control}
               name="IBAN"
               render={({
+                formState: { defaultValues },
                 field: { onChange, value, onBlur },
                 fieldState: { error },
               }) => (
                 <InputGroup
                   value={value}
-                  defaultValue={formValues.IBAN}
+                  defaultValue={defaultValues?.IBAN}
                   placeholder="IBAN"
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -129,12 +136,13 @@ const ProfileBankDetailsScreen = () => {
               control={control}
               name="SIRET"
               render={({
+                formState: { defaultValues },
                 field: { onChange, value, onBlur },
                 fieldState: { error },
               }) => (
                 <InputGroup
                   value={value}
-                  defaultValue={formValues.SIRET}
+                  defaultValue={defaultValues?.SIRET}
                   placeholder="SIRET"
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -189,7 +197,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   error: {
-    marginTop: 40,
+    marginTop: 5,
     width: "80%",
   },
   contentContainer: {
@@ -197,29 +205,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 5,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 5,
-    flexDirection: "column",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  closePressable: {
-    alignItems: "flex-end",
-  },
-  textModal: {
-    textAlign: "center",
-    color: colors.text,
-    marginTop: 15,
-    paddingBottom: 15,
-  },
+  }
 });

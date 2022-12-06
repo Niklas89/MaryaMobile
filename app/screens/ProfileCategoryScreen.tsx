@@ -11,6 +11,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import ErrorMessage from "../components/ErrorMessage";
 import { AntDesign } from "@expo/vector-icons";
 import Toast from "react-native-root-toast";
+import useAuth from "../hooks/useAuth";
 
 const CHANGE_CATEGORY_URL = "partner/category";
 const GETPROFILE_URL = "/partner/profile/";
@@ -37,6 +38,8 @@ const ProfileCategoryScreen = () => {
   });
 
   const { patchQuery, getQuery } = AxiosFunction();
+
+  const { setUserDataChange, userDataChange } = useAuth();
 
   useEffect(() => {
     getQuery(GETCATEGORY_URL)
@@ -92,11 +95,12 @@ const ProfileCategoryScreen = () => {
       .then((response: AxiosResponse) => {
         clearErrors();
         setModalVisible(true);
+        setUserDataChange(userDataChange + 1);
         let categoryName: string | undefined = services?.find(
           (x) => x.id === idCategory
         )?.name;
         setActualCategoryName(categoryName);
-        
+        setTimeout(() => setModalVisible(false), 2500);
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -151,7 +155,7 @@ const ProfileCategoryScreen = () => {
         </ScrollView>
         <Toast
           visible={modalVisible}
-          position={480}
+          position={560}
           shadow={true}
           animation={true}
           hideOnPress={true}
@@ -190,7 +194,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   error: {
-    marginTop: 40,
+    marginTop: 10,
     width: "80%",
   },
   contentContainer: {
@@ -198,29 +202,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 5,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 5,
-    flexDirection: "column",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  closePressable: {
-    alignItems: "flex-end",
-  },
-  textModal: {
-    textAlign: "center",
-    color: colors.text,
-    marginTop: 15,
-    paddingBottom: 15,
-  },
+  }
 });

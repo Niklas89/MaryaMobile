@@ -273,6 +273,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   error: {
+    marginTop: 5,
     width: "80%",
   },
 });

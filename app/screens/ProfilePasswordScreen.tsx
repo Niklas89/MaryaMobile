@@ -56,7 +56,7 @@ const ProfilePasswordScreen = () => {
       .then((response: AxiosResponse) => {
         clearErrors();
         setModalVisible(true);
-        setTimeout(() => setModalVisible(false), 4000);
+        setTimeout(() => setModalVisible(false), 2500);
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -103,7 +103,7 @@ const ProfilePasswordScreen = () => {
               }) => (
                 <InputGroup
                   value={value}
-                  placeholder="Ancien Mot de Passe"
+                  placeholder="Mot de passe actuel"
                   onChangeText={onChange}
                   onBlur={onBlur}
                   password
@@ -121,7 +121,7 @@ const ProfilePasswordScreen = () => {
               }) => (
                 <InputGroup
                   value={value}
-                  placeholder="Nouveau Mot de Passe"
+                  placeholder="Nouveau mot de passe"
                   onChangeText={onChange}
                   onBlur={onBlur}
                   password
@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   error: {
+    marginTop: 5,
     width: "80%",
   },
   contentContainer: {
@@ -188,9 +189,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 5,
-  },
-  textModal: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
+  }
 });

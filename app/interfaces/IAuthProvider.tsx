@@ -33,6 +33,8 @@ export type AuthContextType = {
     persist?: boolean | undefined;
     setAuth?: (auth: AuthData) => void;
     setPersist?: (persist: boolean) => void;
+    userDataChange: number;
+    setUserDataChange: (value: number) => void;
 };
 
 export interface StringArray {
