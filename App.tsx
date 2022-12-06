@@ -16,6 +16,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [auth, setAuth] = useState<IUserData>({});
+  const [userDataChange, setUserDataChange] = useState<number>(0);
 
   const restoreUser = async () => {
     const accessToken = await authStorage.getUser();
@@ -33,7 +34,7 @@ export default function App() {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth }}>
+    <AuthContext.Provider value={{ auth, setAuth, userDataChange, setUserDataChange }}>
       <NavigationContainer>
         {auth.role ? <TabNavigator /> : <RootNavigator />}
       </NavigationContainer>

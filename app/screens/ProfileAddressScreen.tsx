@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Modal,
   ScrollView,
@@ -89,7 +89,7 @@ const ProfileAddressScreen = () => {
       .then((response: AxiosResponse) => {
         clearErrors();
         setModalVisible(true);
-        setTimeout(() => setModalVisible(false), 4000);
+        setTimeout(() => setModalVisible(false), 2500);
       })
       .catch((error: AxiosError) => {
         setError(true);
@@ -99,12 +99,18 @@ const ProfileAddressScreen = () => {
 
   const {
     control,
+    reset,
     handleSubmit,
     clearErrors,
     formState: { errors },
   } = useForm<FormValues>({
+    defaultValues: useMemo(() => formValues, [formValues]),
     resolver: yupResolver(validationSchema),
   });
+
+  useEffect(() => {
+    reset(formValues);
+  }, [formValues]);
 
   return (
     <RootSiblingParent>
@@ -119,12 +125,13 @@ const ProfileAddressScreen = () => {
                 control={control}
                 name="address"
                 render={({
+                  formState: { defaultValues },
                   field: { onChange, value, onBlur },
                   fieldState: { error },
                 }) => (
                   <InputGroup
                     value={value}
-                    defaultValue={formValues.address}
+                    defaultValue={defaultValues?.address}
                     placeholder="Adresse"
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -138,12 +145,13 @@ const ProfileAddressScreen = () => {
                 control={control}
                 name="postalCode"
                 render={({
+                  formState: { defaultValues },
                   field: { onChange, value, onBlur },
                   fieldState: { error },
                 }) => (
                   <InputGroup
                     value={value}
-                    defaultValue={formValues.postalCode}
+                    defaultValue={defaultValues?.postalCode}
                     placeholder="Code postal"
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -156,12 +164,13 @@ const ProfileAddressScreen = () => {
                 control={control}
                 name="city"
                 render={({
+                  formState: { defaultValues },
                   field: { onChange, value, onBlur },
                   fieldState: { error },
                 }) => (
                   <InputGroup
                     value={value}
-                    defaultValue={formValues.city}
+                    defaultValue={defaultValues?.city}
                     placeholder="Ville"
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -220,7 +229,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   error: {
-    marginTop: 40,
+    marginTop: 5,
     width: "80%",
   },
   contentContainer: {
@@ -228,29 +237,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 5,
-  },
-  modalView: {
-    marginTop: 160,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 5,
-    flexDirection: "column",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  closePressable: {
-    alignItems: "flex-end",
-  },
-  textModal: {
-    textAlign: "center",
-    color: colors.text,
-    marginTop: 15,
-    paddingBottom: 15,
-  },
+  }
 });

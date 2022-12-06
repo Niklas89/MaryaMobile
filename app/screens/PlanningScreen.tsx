@@ -1,10 +1,9 @@
 import { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, View, ScrollView } from "react-native";
+import { Button, StyleSheet, Text, View, ScrollView, RefreshControl } from "react-native";
 import { AxiosFunction } from "../api/AxiosFunction";
 import CardBooking from "../components/CardBooking";
 import colors from "../config/colors";
-import { IBooking } from "../interfaces/IBooking";
 
 type Booking = {
   id?: number;
@@ -32,6 +31,7 @@ const PlanningScreen = () => {
   const [pastData, setPastData] = useState<Array<Booking>>();
   const [currentDayData, setCurrentDayData] = useState<Array<Booking>>();
   const [futureData, setFutureData] = useState<Array<Booking>>();
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const URL = "partner/booking/";
 
@@ -42,13 +42,13 @@ const PlanningScreen = () => {
     getQuery(URL + dataType).then((response: AxiosResponse) => {
       dataType === "future" &&
         response.data &&
-        setFutureData(response.data.partner.bookings);
+        setFutureData(response.data.bookings);
       dataType === "past" &&
         response.data &&
-        setPastData(response.data.partner.bookings);
+        setPastData(response.data.bookings);
       dataType === "present" &&
         response.data &&
-        setCurrentDayData(response.data.partner.bookings);
+        setCurrentDayData(response.data.bookings);
     });
   };
 
@@ -56,89 +56,108 @@ const PlanningScreen = () => {
     getData("present");
     getData("future");
     getData("past");
+  }, [valueSelected]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      getData("present");
+      getData("future");
+      getData("past");
+      setRefreshing(false);
+    }, 2000);
   }, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.periodContainer}>
-        <Button
-          title="En cours"
-          color={valueSelected === "ongoing" ? colors.primary : colors.grey}
-          onPress={() => {
-            setValueSelected("ongoing");
-          }}
-        />
-        <Button
-          title="Terminées"
-          color={valueSelected === "finished" ? colors.primary : colors.grey}
-          onPress={() => {
-            setValueSelected("finished");
-          }}
-        />
+    <ScrollView style={styles.scroll} refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }>
+      <View style={styles.container}>
+        <View style={styles.periodContainer}>
+          <Button
+            title="En cours"
+            color={valueSelected === "ongoing" ? colors.primary : colors.grey}
+            onPress={() => {
+              setValueSelected("ongoing");
+            }}
+          />
+          <Button
+            title="Terminées"
+            color={valueSelected === "finished" ? colors.primary : colors.grey}
+            onPress={() => {
+              setValueSelected("finished");
+            }}
+          />
+        </View>
+        <>
+          {valueSelected === "ongoing" && (
+            <ScrollView style={styles.scrollContainer}>
+              <View style={styles.planningContainer}>
+                <Text style={styles.planningText}>Aujourd'hui</Text>
+                {currentDayData ? (
+                  currentDayData.map((booking: Booking, index: number) => {
+                    return (
+                      <View key={index}>
+                        <CardBooking booking={booking} />
+                      </View>
+                    );
+                  })
+                ) : (
+                  <Text style={{ color: colors.text, textAlign: "center", fontSize: 15 }}>
+                    Pas de prestations pour aujourd'hui.
+                  </Text>
+                )}
+              </View>
+              <View style={styles.planningContainer}>
+                <Text style={styles.planningText}>A venir</Text>
+                {futureData ? (
+                  futureData.map((booking: Booking, index: number) => {
+                    return (
+                      <View key={index}>
+                        <CardBooking booking={booking} />
+                      </View>
+                    );
+                  })
+                ) : (
+                  <Text style={{ color: colors.text, textAlign: "center", fontSize: 15 }}>
+                    Pas de prestations à venir.
+                  </Text>
+                )}
+              </View>
+            </ScrollView>
+          )}
+          {valueSelected === "finished" && (
+            <View style={styles.planningContainer}>
+              <Text style={styles.planningText}>Passés</Text>
+              {pastData ? (
+                pastData.map((booking: Booking, index: number) => {
+                  return (
+                    <View key={index}>
+                      <CardBooking booking={booking} />
+                    </View>
+                  );
+                })
+              ) : (
+                <Text style={{ color: colors.text, textAlign: "center", fontSize: 15 }}>
+                  Pas de prestations passées.
+                </Text>
+              )}
+            </View>
+          )}
+        </>
       </View>
-      <>
-        {valueSelected === "ongoing" && (
-          <ScrollView style={styles.scrollContainer}>
-            <View style={styles.planningContainer}>
-              <Text style={styles.planningText}>Aujourd'hui</Text>
-              {currentDayData ? (
-                currentDayData.map((booking: Booking, index: number) => {
-                  return (
-                    <View key={index}>
-                      <CardBooking booking={booking} />
-                    </View>
-                  );
-                })
-              ) : (
-                <Text style={{ color: colors.text, textAlign: "center" }}>
-                  Pas de prestations pour aujourd'hui.
-                </Text>
-              )}
-            </View>
-            <View style={styles.planningContainer}>
-              <Text style={styles.planningText}>A venir</Text>
-              {futureData ? (
-                futureData.map((booking: Booking, index: number) => {
-                  return (
-                    <View key={index}>
-                      <CardBooking booking={booking} />
-                    </View>
-                  );
-                })
-              ) : (
-                <Text style={{ color: colors.text, textAlign: "center" }}>
-                  Pas de prestations à venir.
-                </Text>
-              )}
-            </View>
-          </ScrollView>
-        )}
-        {valueSelected === "finished" && (
-          <View style={styles.planningContainer}>
-            <Text style={styles.planningText}>Passés</Text>
-            {pastData ? (
-              pastData.map((booking: Booking, index: number) => {
-                return (
-                  <View key={index}>
-                    <CardBooking booking={booking} />
-                  </View>
-                );
-              })
-            ) : (
-              <Text style={{ color: colors.text, textAlign: "center" }}>
-                Pas de prestations passées.
-              </Text>
-            )}
-          </View>
-        )}
-      </>
-    </View>
+    </ScrollView>
   );
 };
 
 export default PlanningScreen;
 
 const styles = StyleSheet.create({
+  scroll: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "white",
+  },
   container: {
     alignItems: "center",
     marginBottom: 60,
@@ -166,9 +185,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   planningText: {
-    marginBottom: 10,
+    marginTop: 10,
+    marginBottom: 15,
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 18,
     color: colors.text,
     fontWeight: "bold",
   },

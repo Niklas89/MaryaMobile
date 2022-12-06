@@ -34,6 +34,7 @@ const InputGroup = ({
   errorDetails,
 }: InputGroupProps) => {
   const [isFocus, setIsFocus] = useState<boolean>(false);
+  
   return (
     <View>
       {label && <Text style={styles.label}>{label}</Text>}

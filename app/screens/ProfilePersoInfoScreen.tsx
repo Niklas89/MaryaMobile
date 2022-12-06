@@ -1,23 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Button,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../config/colors";
 import { AxiosFunction } from "../api/AxiosFunction";
 import * as Yup from "yup";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import InputGroup from "../components/Form/InputGroup";
 import SubmitButton from "../components/Form/Button";
 import { AxiosError, AxiosResponse } from "axios";
 import ErrorMessage from "../components/ErrorMessage";
-import useAuth from "../hooks/useAuth";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -36,15 +27,9 @@ type FormValues = {
 
 const ProfilePersoInfoScreen = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const { auth, setAuth } = useAuth();
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | unknown>();
-  const [formValues, setFormValues] = useState<FormValues>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
+  const [formValues, setFormValues] = useState<FormValues>();
 
   // DateTimePicker
   const [date, setDate] = useState(new Date());
@@ -117,22 +102,13 @@ const ProfilePersoInfoScreen = () => {
       .then((response: AxiosResponse) => {
         clearErrors();
         setModalVisible(true);
-        setTimeout(() => setModalVisible(false), 4000);
+        setTimeout(() => setModalVisible(false), 2500);
       })
       .catch((error: AxiosError) => {
         setError(true);
         setErrorMessage("Une ou plusieurs valeurs envoyées sont incorrects.");
       });
   };
-
-  const {
-    control,
-    handleSubmit,
-    clearErrors,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: yupResolver(validationSchema),
-  });
 
   // DateTimePicker
   const onDateSelected = (
@@ -142,6 +118,21 @@ const ProfilePersoInfoScreen = () => {
     setShow(false);
     selectedDate && setDate(selectedDate);
   };
+
+  const {
+    control,
+    reset,
+    handleSubmit,
+    clearErrors,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: useMemo(() => formValues, [formValues]),
+    resolver: yupResolver(validationSchema),
+  });
+
+  useEffect(() => {
+    reset(formValues);
+  }, [formValues]);
 
   return (
     <>
@@ -155,12 +146,13 @@ const ProfilePersoInfoScreen = () => {
               control={control}
               name="lastName"
               render={({
+                formState: { defaultValues },
                 field: { onChange, onBlur, value },
                 fieldState: { error },
               }) => (
                 <InputGroup
                   value={value}
-                  defaultValue={formValues.lastName}
+                  defaultValue={defaultValues?.lastName}
                   placeholder="Nom de famille"
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -173,12 +165,13 @@ const ProfilePersoInfoScreen = () => {
               control={control}
               name="firstName"
               render={({
+                formState: { defaultValues },
                 field: { onChange, value, onBlur },
                 fieldState: { error },
               }) => (
                 <InputGroup
                   value={value}
-                  defaultValue={formValues.firstName}
+                  defaultValue={defaultValues?.firstName}
                   placeholder="Prénom"
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -191,12 +184,13 @@ const ProfilePersoInfoScreen = () => {
               control={control}
               name="email"
               render={({
+                formState: { defaultValues },
                 field: { onChange, value, onBlur },
                 fieldState: { error },
               }) => (
                 <InputGroup
                   value={value}
-                  defaultValue={formValues.email}
+                  defaultValue={defaultValues?.email}
                   placeholder="Adresse mail"
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -209,12 +203,13 @@ const ProfilePersoInfoScreen = () => {
               control={control}
               name="phone"
               render={({
+                formState: { defaultValues },
                 field: { onChange, value, onBlur },
                 fieldState: { error },
               }) => (
                 <InputGroup
                   placeholder="Numéro de téléphone"
-                  defaultValue={formValues.phone}
+                  defaultValue={defaultValues?.phone}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}

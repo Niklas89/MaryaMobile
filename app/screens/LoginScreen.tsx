@@ -71,7 +71,6 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
       .then((response: AxiosResponse) => {
         const accessToken = response.data.accessToken;
         const role = response.data.idRole;
-        console.log(response.data);
         //setUserInfos(response.data);
         // setAuth in state and store accesstoken in SecureStore
         setAuth?.({ role, accessToken });

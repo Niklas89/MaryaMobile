@@ -1,22 +1,23 @@
 export interface IBooking {
-  id?: number;
+  id: number;
   accepted?: boolean;
-  appointmentDate?: string;
-  description?: string;
-  nbHours?: number;
-  totalPrice?: number;
-  idService?: number;
-  idClient?: number;
+  appointmentDate: string;
+  description: string;
+  message: string;
+  nbHours: number;
+  totalPrice: number;
+  idService: number;
+  idClient: number;
   data?: {
-    id?: number;
+    id: number;
     accepted?: boolean;
-    appointmentDate?: string;
-    description?: string;
-    nbHours?: number;
-    totalPrice?: number;
-    idService?: number;
-    message?: string;
-    idClient?: number;
+    appointmentDate: string;
+    description: string;
+    nbHours: number;
+    totalPrice: number;
+    idService: number;
+    message: string;
+    idClient: number;
   };
 }
 
