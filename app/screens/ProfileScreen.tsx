@@ -227,10 +227,10 @@ const ProfileScreen: React.FC<Props<"Profile">> = ({ navigation }) => {
 
                 <View style={styles.footerButtons}>
                   <Button
-                    title="Déconnecter"
+                    title="Déconnexion"
                     onPress={() => setStateLogout(true)}
                     color={colors.secondary}
-                    accessibilityLabel="Déconnecter"
+                    accessibilityLabel="Déconnexion"
                   />
                 </View>
               </View>

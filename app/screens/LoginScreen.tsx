@@ -86,8 +86,10 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         const cookieSplitTwo = splitone?.split("=");
         if (cookieSplitTwo != undefined) console.log(cookieSplitTwo[1]);
         */
+       console.log(response);
       })
       .catch((error: AxiosError) => {
+        console.log(error);
         setError(true);
         setErrorMessage("Une erreur est survenue, veuillez réessayer.");
       });
@@ -147,13 +149,13 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
       </View>
       <View style={styles.input}>
         <View style={styles.button}>
-          <SubmitButton title="Se connecter" onPress={handleSubmit(login)} />
+          <SubmitButton title="Connexion" onPress={handleSubmit(login)} />
         </View>
 
         <View style={styles.button}>
           <Button
             color={colors.secondary}
-            title="Mot de pass oublié ?"
+            title="Mot de passe oublié"
             onPress={() => navigation.navigate(routes.RESETPASSWORD)}
           />
         </View>
