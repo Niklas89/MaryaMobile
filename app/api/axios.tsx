@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://10.0.2.2:8080/api"; // base URL for the backend server
+const BASE_URL = "https://api.marya.app/api"; // base URL for the backend server
 
 export default axios.create({
   baseURL: BASE_URL,
