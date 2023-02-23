@@ -23,22 +23,23 @@ type Booking = {
     idService: number;
     idClient: number;
   };
+  index: number;
 };
 
-const CardBooking = ({ booking }: Booking) => {
+const CardBooking = ({ booking, index }: Booking) => {
   const [openCard, setOpenCard] = useState<boolean>(false);
   const [serviceData, setServiceData] = useState<IService>();
   const [clientData, setClientData] = useState<IUser>();
+  const [colorSelected, setColorSelected] = useState<string>();
 
   const { getQuery } = AxiosFunction();
 
-  const colorBackground = [
-    colors.primary,
-    colors.secondary,
-    colors.tertiary,
-    colors.quaternary,
-    colors.quinary,
-  ];
+  const colorBackground = [colors.secondary, colors.tertiary];
+
+  useEffect(() => {
+    index % 2 === 0 && setColorSelected(colors.secondary);
+    index % 2 === 1 && setColorSelected(colors.tertiary);
+  }, []);
 
   useEffect(() => {
     getQuery(`partner/client/${booking?.idClient?.toString()}`).then(
@@ -56,67 +57,69 @@ const CardBooking = ({ booking }: Booking) => {
 
   return (
     <>
-    <Pressable
-      onPress={() => setOpenCard(!openCard)}
-      style={[styles.cardContainer, { backgroundColor: colors.tertiary }]}
-    >
-      <View style={styles.dataContainer}>
-        <View style={[styles.rowContainer, { marginVertical: 4 }]}>
-          <Text style={styles.text}>{serviceData && serviceData.name}</Text>
-          <View style={styles.iconContainer}>
-            <MaterialCommunityIcons
-              name="calendar-blank-multiple"
-              size={18}
-              color="white"
-              style={{ marginRight: 5 }}
-            />
-            <Text style={styles.text}>
-              {moment(booking.appointmentDate).format("DD/MM/YYYY à hh:mm")}
-            </Text>
-          </View>
-        </View>
-        {openCard && (
-          <>
-            <Text style={[styles.text, { marginVertical: 4 }]}>
-              {booking.description}
-            </Text>
-            <View style={[styles.rowContainer, { marginVertical: 4 }]}>
-              <View style={styles.iconContainer}>
-                <Ionicons
-                  name="time"
-                  size={18}
-                  color="white"
-                  style={{ marginRight: 5 }}
-                />
-                <Text style={styles.text}>{booking.nbHours} heures</Text>
-              </View>
-              <View style={styles.iconContainer}>
-                <FontAwesome
-                  name="euro"
-                  size={18}
-                  color="white"
-                  style={{ marginRight: 5 }}
-                />
-                <Text style={styles.text}>{booking.totalPrice} €</Text>
-              </View>
-            </View>
-            <View style={[styles.iconContainer, { marginVertical: 4 }]}>
-              <Entypo
-                name="address"
+      <Pressable
+        onPress={() => setOpenCard(!openCard)}
+        style={[styles.cardContainer, { backgroundColor: colorSelected }]}
+      >
+        <View style={styles.dataContainer}>
+          <View style={[styles.rowContainer, { marginVertical: 4 }]}>
+            <Text style={styles.text}>{serviceData && serviceData.name}</Text>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons
+                name="calendar-blank-multiple"
                 size={18}
                 color="white"
                 style={{ marginRight: 5 }}
               />
               <Text style={styles.text}>
-                {clientData && clientData.address} {clientData && clientData.postalCode} {clientData && clientData.city}
+                {moment(booking.appointmentDate).format("DD/MM/YYYY à hh:mm")}
               </Text>
             </View>
-          </>
-        )}
-      </View>
-    </Pressable>
-  </>
-  )
+          </View>
+          {openCard && (
+            <>
+              <Text style={[styles.text, { marginVertical: 4 }]}>
+                {booking.description}
+              </Text>
+              <View style={[styles.rowContainer, { marginVertical: 4 }]}>
+                <View style={styles.iconContainer}>
+                  <Ionicons
+                    name="time"
+                    size={18}
+                    color="white"
+                    style={{ marginRight: 5 }}
+                  />
+                  <Text style={styles.text}>{booking.nbHours} heures</Text>
+                </View>
+                <View style={styles.iconContainer}>
+                  <FontAwesome
+                    name="euro"
+                    size={18}
+                    color="white"
+                    style={{ marginRight: 5 }}
+                  />
+                  <Text style={styles.text}>{booking.totalPrice} €</Text>
+                </View>
+              </View>
+              <View style={[styles.iconContainer, { marginVertical: 4 }]}>
+                <Entypo
+                  name="address"
+                  size={18}
+                  color="white"
+                  style={{ marginRight: 5 }}
+                />
+                <Text style={styles.text}>
+                  {clientData && clientData.address}{" "}
+                  {clientData && clientData.postalCode}{" "}
+                  {clientData && clientData.city}
+                </Text>
+              </View>
+            </>
+          )}
+        </View>
+      </Pressable>
+    </>
+  );
 };
 
 export default CardBooking;

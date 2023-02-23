@@ -98,7 +98,7 @@ const PlanningScreen = () => {
                   currentDayData.map((booking: Booking, index: number) => {
                     return (
                       <View key={index}>
-                        <CardBooking booking={booking} />
+                        <CardBooking booking={booking} index={index}/>
                       </View>
                     );
                   })
@@ -114,7 +114,7 @@ const PlanningScreen = () => {
                   futureData.map((booking: Booking, index: number) => {
                     return (
                       <View key={index}>
-                        <CardBooking booking={booking} />
+                        <CardBooking booking={booking} index={index}/>
                       </View>
                     );
                   })
@@ -133,7 +133,7 @@ const PlanningScreen = () => {
                 pastData.map((booking: Booking, index: number) => {
                   return (
                     <View key={index}>
-                      <CardBooking booking={booking} />
+                      <CardBooking booking={booking} index={index}/>
                     </View>
                   );
                 })
