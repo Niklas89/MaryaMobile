@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MaryaMobile",
-    "slug": "MaryaMobile",
+    "name": "Marya Partenaires",
+    "slug": "MaryaPartenaires",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./app/assets/img/icon.png",
@@ -21,6 +21,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.marya.partenaires",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/img/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -29,6 +31,11 @@
     "web": {
       "favicon": ""
     },
-    "description": "Partenaires de Marya - gérez votre planning de réservations facilement."
+    "description": "Partenaires de Marya - gérez votre planning de réservations facilement.",
+    "extra": {
+      "eas": {
+        "projectId": "498ff5da-8c83-4078-b6f1-b977621f6b20"
+      }
+    }
   }
 }
