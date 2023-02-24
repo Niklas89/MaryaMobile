@@ -83,9 +83,10 @@ const styles = StyleSheet.create({
     borderColor: colors.red,
   },
   input: {
-    marginBottom: 15,
+    marginBottom: 20,
     paddingLeft: 10,
     paddingVertical: 5,
+    fontSize: 16,
   },
   errorText: {
     color: colors.red,
