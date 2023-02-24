@@ -21,6 +21,7 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import routes from "../navigation/routes";
+import BackgroundImg from "../components/BackgroundImgRegister";
 
 const REGISTER_URL = "auth/partner/register";
 const GETCATEGORY_URL = "service/category";
@@ -151,7 +152,7 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
         clearErrors();
         bottomSheetRef.current?.present();
       })
-      .catch((error: AxiosError) => {      
+      .catch((error: AxiosError) => {
         setError(true);
         setErrorMessage(error.response?.data);
       });
@@ -173,6 +174,7 @@ const RegisterScreen: React.FC<Props<"Register">> = ({ navigation }) => {
   return (
     <GestureHandlerRootView>
       <BottomSheetModalProvider>
+      <BackgroundImg />
         <ScrollView style={styles.scroll}>
           <View style={styles.container}>
             <View style={styles.error}>

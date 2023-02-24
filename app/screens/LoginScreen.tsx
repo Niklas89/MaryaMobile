@@ -86,7 +86,6 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         const cookieSplitTwo = splitone?.split("=");
         if (cookieSplitTwo != undefined) console.log(cookieSplitTwo[1]);
         */
-       console.log(response);
       })
       .catch((error: AxiosError) => {
         console.log(error);
