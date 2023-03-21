@@ -1,7 +1,5 @@
 import "dotenv/config";
 import axios from "../api/axios";
-import {render} from "@testing-library.react-native";
-import Login from "../screens/LoginScreen";
 
 describe("Login", () => {
   const data = {
