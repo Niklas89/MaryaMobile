@@ -41,11 +41,11 @@ const BookingScreen = () => {
     let bookings: IBooking[] = [];
     let services: IService[] = [];
 
-    categories?.forEach((category: ICategory, index: any) => {
-      category.services?.forEach((service: IService, index: any) => {
+    categories?.forEach((category: ICategory) => {
+      category.services?.forEach((service: IService) => {
         //on push les services
         services.push(service);
-        service.bookings?.forEach((booking: IBooking, index: any) => {
+        service.bookings?.forEach((booking: IBooking) => {
           //on push les bookings
           bookings.push(booking);
         });
