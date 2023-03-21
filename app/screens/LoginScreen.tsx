@@ -88,7 +88,6 @@ const LoginScreen: React.FC<Props<"Login">> = ({ navigation }) => {
         */
       })
       .catch((error: AxiosError) => {
-        console.log(error);
         setError(true);
         setErrorMessage("Une erreur est survenue, veuillez réessayer.");
       });
